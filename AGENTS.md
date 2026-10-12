@@ -6,3 +6,4 @@
 - Keep planning independent of Windows, UI, and game packets.
 - Verify transfers and crafting from fresh server evidence; never retry ambiguous transactions.
 - Do not commit accounts, passwords, game assets, captures, or runtime databases.
+- README screenshots explicitly requested by the owner are allowed in docs/screenshots only: use fictional simulation data and original public artwork. Other captures stay out of Git.

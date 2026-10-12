@@ -7,6 +7,35 @@ Windows desktop automation for turning carried **Dark Ages gold into Gold Bars**
 
 DAMiner runs enabled characters concurrently, lets unregistered characters donate gold to registered crafters, and checks server evidence before recording a craft or transfer as successful. Its MAUI Blazor interface shares the same workflow with a simulation-only browser preview.
 
+## Screenshots
+
+Simulation preview with fictional characters and original public artwork. The Windows app shares this interface.
+
+![Operations dashboard with a courier, gold donor, crafter, and local banker](docs/screenshots/operations.png)
+
+<details>
+<summary>Character roster, banker settings, and verified history</summary>
+
+### Character roster
+
+Enable characters and choose which accounts can craft bars.
+
+![Character roster with enable controls and crafting permissions](docs/screenshots/characters.png)
+
+### Banker settings
+
+A local banker receives batches and deposits through Lamont at Abel bank.
+
+![Local banker settings and saved bar recipe](docs/screenshots/settings.png)
+
+### Verified history
+
+Crafts, trades, and deposits retain their planned, started, and verified outcomes.
+
+![Verified operation history after a simulated run](docs/screenshots/history.png)
+
+</details>
+
 ## Download and start
 
 Get the **portable ZIP** or **Windows installer** from [Releases](https://github.com/BuildWithRaymond/DAMiner/releases). Extract the entire ZIP before opening `DAMiner.exe`. Windows 10/11 x64 and WebView2 are required.

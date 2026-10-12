@@ -5,7 +5,8 @@
 <section class="panel" aria-label="Application updates">
     <div class="saved-setup-heading">
         <div><h2>Application updates</h2><p>New versions download automatically and install the next time you open DAMiner.</p></div>
-        <span class="state-badge">v@Updates.CurrentVersion</span>
+        @* The version prefix needs an explicit Razor expression, not email-like text. *@
+        <span class="state-badge">v@(Updates.CurrentVersion)</span>
     </div>
     <div class="form-grid">
         <label>GitHub release repository<input @bind="repository" placeholder="YourGitHubName/DAMiner"

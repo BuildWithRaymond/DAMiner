@@ -293,7 +293,8 @@
 </tr> }</tbody>
 </table>@if (Model.History.Count == 0) { <p class="empty">No operations yet. Your completed and interrupted runs will stay here.</p> }</div>
         }
-        <footer>DAMiner v@Updates.CurrentVersion <span>Craft at Abel · Collect with one courier · Deliver to your banker</span>
+        @* Explicit expression keeps the adjacent "v@" from being treated as email text. *@
+        <footer>DAMiner v@(Updates.CurrentVersion) <span>Craft at Abel · Collect with one courier · Deliver to your banker</span>
 </footer>
     </main>
 </div>

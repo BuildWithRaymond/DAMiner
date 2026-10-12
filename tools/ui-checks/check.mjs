@@ -19,6 +19,8 @@ async function capture(name) {
 try {
   await page.goto(baseUrl);
   await page.getByRole('heading', { name: 'Operations', exact: true }).waitFor();
+  assert.match(await page.locator('footer').innerText(), /DAMiner v\d+\.\d+\.\d+/,
+    'The version expression must render a numeric version instead of literal Razor text');
   assert.equal(await page.getByRole('navigation').getByRole('button', { name: 'Record setup', exact: true }).count(), 0,
     'A saved recipe must keep recording out of daily navigation');
   assert.equal(await page.getByRole('row').count(), 5);

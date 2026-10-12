@@ -35,6 +35,12 @@ node tools/ui-checks/check.mjs
 
 Artifacts are written under ignored `artifacts/`. Native `--demo` uses fictional characters and disables update requests/preference writes.
 
+To refresh the README images, run `node tools/ui-checks/capture-readme.mjs` while
+the preview is open. This helper checks simulation mode and empty password fields,
+uses fictional names, and substitutes separately generated original artwork. Only
+these requested documentation images belong in `docs/screenshots/`; other captures
+remain in ignored artifacts.
+
 ## Read the workflow
 
 Read `Models.cs` for contracts, `GoldPlanner.cs` for pure decisions, and `RunCoordinator.cs` for workflow order. It launches producers concurrently, funds remaining purchases, collects into one courier, and delivers batches. `IGameGateway` isolates these decisions from native input and packets.
