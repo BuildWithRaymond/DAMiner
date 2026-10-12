@@ -1,0 +1,39 @@
+name: Build Windows release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  windows-release:
+    if: github.event.release.prerelease == false
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - name: Install Windows MAUI workload
+        run: dotnet workload install maui-windows
+      - name: Test and package DAMiner
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          $releaseVersion = $env:RELEASE_TAG -replace '^v', ''
+          ./tools/Publish-Release.ps1 -Version $releaseVersion -Repository $env:GITHUB_REPOSITORY
+      - name: Upload installer, portable build, packages, and feed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          $releaseAssets = @(Get-ChildItem -LiteralPath artifacts/releases -File | ForEach-Object FullName)
+          gh release upload $env:RELEASE_TAG @releaseAssets --repo $env:GITHUB_REPOSITORY --clobber
+          if ($LASTEXITCODE -ne 0) { throw 'Release upload failed.' }
