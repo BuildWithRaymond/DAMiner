@@ -9,7 +9,8 @@ permissions:
 
 jobs:
   windows-release:
-    if: github.event.release.prerelease == false
+    # Manually supplied assets belong to the publisher. Never replace published packages.
+    if: github.event.release.prerelease == false && !github.event.release.assets[0]
     runs-on: windows-latest
     defaults:
       run:
@@ -35,5 +36,5 @@ jobs:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           $releaseAssets = @(Get-ChildItem -LiteralPath artifacts/releases -File | ForEach-Object FullName)
-          gh release upload $env:RELEASE_TAG @releaseAssets --repo $env:GITHUB_REPOSITORY --clobber
+          gh release upload $env:RELEASE_TAG @releaseAssets --repo $env:GITHUB_REPOSITORY
           if ($LASTEXITCODE -ne 0) { throw 'Release upload failed.' }
