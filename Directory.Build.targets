@@ -1,0 +1,8 @@
+<Project>
+  <!-- Generate original fallback artwork only when missing. The native host and
+       browser preview can both be built directly from a fresh source checkout. -->
+  <Target Name="InitializeDAMinerBranding" BeforeTargets="PrepareForBuild"
+          Condition="'$(OS)' == 'Windows_NT' And '$(MSBuildProjectName)' == 'DAGoldManager.UI'">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)tools/Initialize-Branding.ps1&quot;" />
+  </Target>
+</Project>

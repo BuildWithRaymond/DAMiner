@@ -1,0 +1,31 @@
+name: Bug report
+description: Report a reproducible problem with sanitized information.
+body:
+  - type: markdown
+    attributes:
+      value: Never include passwords, account names, databases, tokens, or raw captures. Use fictional character names.
+  - type: input
+    id: version
+    attributes:
+      label: DAMiner version
+      description: Include portable/installer/source build and Windows version.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include banker mode and whether this happened in simulation or live use.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Relevant error text and operation outcomes. Remove personal information.

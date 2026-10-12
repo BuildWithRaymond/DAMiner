@@ -1,0 +1,50 @@
+@using DAGoldManager.Updates
+@implements IDisposable
+@inject ApplicationUpdates Updates
+
+<section class="panel" aria-label="Application updates">
+    <div class="saved-setup-heading">
+        <div><h2>Application updates</h2><p>New versions download automatically and install the next time you open DAMiner.</p></div>
+        <span class="state-badge">v@Updates.CurrentVersion</span>
+    </div>
+    <div class="form-grid">
+        <label>GitHub release repository<input @bind="repository" placeholder="YourGitHubName/DAMiner"
+            disabled="@(Updates.Preview || Updates.Working || Updates.Status.Phase == UpdatePhase.Ready)" /></label>
+        <label class="check-label"><input type="checkbox" @bind="automatic" disabled="@(Updates.Preview || Updates.Working)" /> Automatically download updates</label>
+    </div>
+    <div class="run-buttons">
+        <button disabled="@(Updates.Preview || Updates.Working)" @onclick="Save">Save update preferences</button>
+        <button disabled="@(!Updates.CanCheck)" @onclick="() => Updates.CheckAsync()">Check for updates</button>
+    </div>
+    <p role="status" aria-live="polite" class="subtle">@Updates.Status.Message</p>
+    @if (Updates.Status.Phase == UpdatePhase.Downloading)
+    {
+        <progress aria-label="Update download progress" value="@Updates.Status.Percent" max="100">@Updates.Status.Percent%</progress>
+    }
+    @if (error is not null) { <p role="alert">@error</p> }
+</section>
+
+@code {
+    string repository = "";
+    bool automatic;
+    string? error;
+    protected override void OnInitialized()
+    {
+        repository = Updates.Preferences.Repository;
+        automatic = Updates.Preferences.Automatic;
+        Updates.Changed += Refresh;
+    }
+    async Task Save()
+    {
+        try
+        {
+            Updates.SavePreferences(new(repository, automatic));
+            repository = Updates.Preferences.Repository;
+            error = null;
+            await Updates.CheckAsync(automatic: true);
+        }
+        catch (Exception problem) { error = problem.Message; }
+    }
+    void Refresh() => _ = InvokeAsync(StateHasChanged);
+    public void Dispose() => Updates.Changed -= Refresh;
+}

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Vendored Arbiter models include fields populated by deserialization. -->
+    <NoWarn>$(NoWarn);CS0649</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DAQuester.Core\DAQuester.Core.csproj" />
+    <InternalsVisibleTo Include="DAQuester.Tests" />
+  </ItemGroup>
+</Project>

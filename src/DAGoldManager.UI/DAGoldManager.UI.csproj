@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <ItemGroup>
+    <!-- Explicit inclusion makes generated artwork available on the first clean build. -->
+    <Content Include="wwwroot/images/gold-bar.png" Condition="!Exists('wwwroot/images/gold-bar.png')" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="../DAGoldManager.Game/DAGoldManager.Game.csproj" />
+    <ProjectReference Include="../DAGoldManager.Storage/DAGoldManager.Storage.csproj" />
+    <ProjectReference Include="../DAGoldManager.Updates/DAGoldManager.Updates.csproj" />
+  </ItemGroup>
+</Project>

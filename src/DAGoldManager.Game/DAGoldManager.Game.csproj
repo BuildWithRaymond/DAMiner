@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../DAGoldManager.Core/DAGoldManager.Core.csproj" />
+    <ProjectReference Include="../../vendor/DAQuester/DAQuester.DarkAges/DAQuester.DarkAges.csproj" />
+  </ItemGroup>
+</Project>

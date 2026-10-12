@@ -1,0 +1,20 @@
+<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="@PathData" />
+</svg>
+
+@code {
+    [Parameter] public string Name { get; set; } = "Operations";
+
+    string PathData => Name switch
+    {
+        "Operations" => "M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z",
+        "Characters" => "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M22 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75",
+        "Settings" => "M4 7h16 M4 17h16 M8 4v6 M16 14v6",
+        "History" => "M3 11a9 9 0 1 1 2.6 7 M3 4v7h7 M12 7v5l3 2",
+        "Bank" => "M3 9l9-6 9 6H3 M5 11v7 M10 11v7 M14 11v7 M19 11v7 M3 21h18",
+        "Courier" => "M4 8h16v12H4z M8 8V5h8v3 M4 12h16 M10 12v3h4v-3",
+        "Recipient" => "M4 5h16v16H4z M8 9h8v8H8z M12 9v8 M8 13h8",
+        "Record setup" => "M9 3H5v18h14V3h-4 M9 3h6v4H9z M8 12h8 M8 16h5",
+        _ => "M5 12h14 M13 6l6 6-6 6"
+    };
+}

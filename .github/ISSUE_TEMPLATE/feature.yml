@@ -1,0 +1,17 @@
+name: Feature proposal
+description: Describe a user problem and proposed improvement.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: What are you trying to accomplish, and what blocks you?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Include alternatives and effects on verification or recovery.
+    validations:
+      required: true

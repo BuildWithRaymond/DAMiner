@@ -1,0 +1,26 @@
+<section class="panel">
+    <h2>Banker</h2>
+    <div class="form-grid">
+        <label>Banker mode<select aria-label="Banker mode" @bind="Model.BankerMode">
+            <option value="Local">Local banker · managed by DAMiner</option>
+            <option value="External">External banker · already running</option>
+        </select></label>
+        <label>Banker character<input @bind="Model.Recipient" placeholder="Your banker's character name" /></label>
+        @if (Model.BankerMode == BankerMode.Local)
+        {
+            <label>Deposit location<input value="Abel bank · Lamont" readonly /></label>
+            <p class="subtle">Save the banker's password in Characters and keep it enabled. DAMiner walks it to Abel bank, parks on a free tile on row 8, accepts the courier's bars, and deposits them through Lamont. Existing carried Gold Bars are also deposited. Each batch finishes depositing before the next trade.</p>
+        }
+        else
+        {
+            <label>Banker map ID<input type="number" min="1" max="65535" @bind="Model.RecipientMap" /></label>
+            <label>Banker X<input type="number" min="0" max="65535" @bind="Model.RecipientX" /></label>
+            <label>Banker Y<input type="number" min="0" max="65535" @bind="Model.RecipientY" /></label>
+            <p class="subtle">Keep this banker logged in with its own acceptance and deposit automation. It can run on another computer or VPS; no banker password is needed here.</p>
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public DashboardModel Model { get; set; } = null!;
+}

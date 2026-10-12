@@ -1,0 +1,28 @@
+@if (Model.Recipe is { } recipe)
+{
+    <section class="panel saved-setup">
+        <div class="saved-setup-heading">
+            <div class="recipe-mark"><img src="_content/DAGoldManager.UI/images/gold-bar.png" alt="" /></div>
+            <div><h2>Saved bank setup</h2><p>@(Model.BankerConfigured ? "Ready for automatic crafting and delivery." : "Craft recipe saved. Complete banker settings to enable Go.")</p></div>
+            <span class="state-badge good">Saved</span>
+        </div>
+        <dl class="recipe-facts">
+            <div><dt>Bank NPC</dt><dd>@recipe.NpcName</dd></div>
+            <div><dt>Map / position</dt><dd>@recipe.Map · @recipe.X,@recipe.Y</dd></div>
+            <div><dt>Bar item</dt><dd>@recipe.BarName</dd></div>
+            <div><dt>Gold per bar</dt><dd class="data-text">@recipe.GoldCost.ToString("N0")</dd></div>
+            <div><dt>Bars per trade</dt><dd>@Model.BatchSize bars</dd></div>
+            <div><dt>Deposit wait</dt><dd>@(Model.BankerMode == BankerMode.Local ? "Until server confirmation" : $"{Model.DepositWaitSeconds} seconds")</dd></div>
+        </dl>
+        <details class="advanced-setup">
+            <summary>Advanced setup</summary>
+            <p>Review the recorded bank process, or record again if the bank menus or trade capacity change.</p>
+            <button disabled="@(Model.Busy || Model.Recording)" @onclick="ReviewSetup">Review recording setup</button>
+        </details>
+    </section>
+}
+
+@code {
+    [Parameter, EditorRequired] public DashboardModel Model { get; set; } = null!;
+    [Parameter] public EventCallback ReviewSetup { get; set; }
+}

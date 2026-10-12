@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Application/">
+    <Project Path="src/DAGoldManager.Core/DAGoldManager.Core.csproj" />
+    <Project Path="src/DAGoldManager.Game/DAGoldManager.Game.csproj" />
+    <Project Path="src/DAGoldManager.Storage/DAGoldManager.Storage.csproj" />
+    <Project Path="src/DAGoldManager.UI/DAGoldManager.UI.csproj" />
+    <Project Path="src/DAGoldManager.Updates/DAGoldManager.Updates.csproj" />
+    <Project Path="src/DAGoldManager.Desktop/DAGoldManager.Desktop.csproj" />
+    <Project Path="src/DAGoldManager.Preview/DAGoldManager.Preview.csproj" />
+  </Folder>
+  <Folder Name="/Tests/"><Project Path="tests/DAGoldManager.Tests/DAGoldManager.Tests.csproj" /></Folder>
+  <Folder Name="/Vendor/">
+    <Project Path="vendor/DAQuester/DAQuester.Core/DAQuester.Core.csproj" />
+    <Project Path="vendor/DAQuester/DAQuester.DarkAges/DAQuester.DarkAges.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework Condition="'$(TargetFramework)' == ''">net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+    <Version Condition="'$(Version)' == ''">0.2.0</Version>
+    <!-- Forks can override this property with their own public release repository. -->
+    <UpdateRepository Condition="'$(UpdateRepository)' == ''">BuildWithRaymond/DAMiner</UpdateRepository>
+  </PropertyGroup>
+</Project>

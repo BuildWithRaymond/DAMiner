@@ -1,0 +1,25 @@
+**/bin/
+**/obj/
+artifacts/
+Data/
+passwords/
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite3
+*.exe.WebView2/
+.vs/
+*.user
+*.log
+.dotnet/
+**/node_modules/
+*.Backup.tmp
+
+# Local game artwork and generated public fallback icons never enter source history.
+/src/DAGoldManager.Desktop/Resources/AppIcon/appicon.png
+/src/DAGoldManager.Desktop/Resources/AppIcon/appicon.ico
+/src/DAGoldManager.UI/wwwroot/images/gold-bar.png

@@ -1,0 +1,329 @@
+@implements IDisposable
+@inject DashboardModel Model
+@inject DAGoldManager.Updates.ApplicationUpdates Updates
+
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="wordmark">
+<span class="bar-mark"><img src="_content/DAGoldManager.UI/images/gold-bar.png" alt="" /></span>
+<div>DAMiner<span>GOLD OPERATIONS</span>
+</div>
+</div>
+        <p class="sidebar-caption">Your gold. One destination.</p>
+        <nav aria-label="Main navigation">
+            @foreach (var tab in VisibleTabs)
+            {
+                <button class="nav-button @(activeTab == tab ? "selected" : "")" aria-current="@(activeTab == tab ? "page" : null)" @onclick="() => activeTab = tab"><UiIcon Name="@tab" /><span>@tab</span></button>
+            }
+        </nav>
+        <div class="sidebar-bottom">
+<span class="status-dot">
+</span>@(Model.Demo ? "Simulated preview" : "Windows desktop")<small>@(Model.Demo ? "Fictional characters only" : "Local workspace")</small>
+</div>
+    </aside>
+
+    <main>
+        <header class="page-header">
+            <div>
+<p class="eyebrow">DARK AGES · TREASURY</p>
+<h1>@activeTab</h1>
+</div>
+            <span class="mode-tag">@(Model.Demo ? "PREVIEW" : "LOCAL")</span>
+        </header>
+        @if (Model.Error is not null)
+        {
+            <div class="notice error" role="alert">
+<span>@Model.Error</span>
+<button @onclick="Model.ClearError">Dismiss</button>
+</div>
+        }
+        @if (Model.Demo)
+        {
+            <div class="notice">Simulated roster. Go demonstrates the full workflow without touching the game. Deposit waits run faster in preview.</div>
+        }
+
+        @if (activeTab == "Operations")
+        {
+            @if (Updates.Status.Phase == DAGoldManager.Updates.UpdatePhase.Ready)
+            { <div class="notice" role="status">DAMiner @Updates.Status.Version downloaded. Installs next launch. <button @onclick='() => activeTab = "Settings"'>View update</button></div> }
+            @if (!Model.BankerConfigured)
+            { <div class="notice">Choose your banker and complete its setup before starting. <button @onclick='() => activeTab = "Settings"'>Open settings</button></div> }
+            <section class="run-strip" data-phase="@Model.Progress.Phase">
+                <div>
+<span class="section-label"><span class="status-dot"></span>CURRENT RUN</span>
+<h2>@PhaseLabel(Model.Progress.Phase)</h2>
+<p aria-live="polite">@Model.Progress.Message</p>
+</div>
+                <div class="run-buttons">
+                    <button class="primary go-button" disabled="@(Model.Busy || Model.Recording || Model.Recipe is null || Model.Characters.Length == 0 || !Model.BankerConfigured)" @onclick="() => Run(Model.GoAsync)">Go <span aria-hidden="true">→</span>
+</button>
+                    <button disabled="@(!Model.Busy)" @onclick="Model.TogglePause">@(Model.Paused ? "Resume" : "Pause")</button>
+                    <button class="stop-button" disabled="@(!Model.Busy)" @onclick="Model.Stop">Stop</button>
+                </div>
+            </section>
+
+            <div class="totals">
+                <div>
+<span>Carried gold</span>
+<strong>@Model.ProductionStates.Sum(c => c.Gold).ToString("N0")</strong>
+<small>Across enabled producers</small>
+</div>
+                <div>
+<span>Possible new bars</span>
+<strong>@(Model.ProductionStates.Sum(c => c.Gold) / (Model.Recipe?.GoldCost ?? 50_500_000))</strong>
+<small>Before travel and capacity limits</small>
+</div>
+                <div>
+<span>Created this run</span>
+<strong>@(Model.Result?.CreatedBars ?? Model.Progress.Created)</strong>
+<small>Confirmed gold and inventory changes</small>
+</div>
+                <div>
+<span>Delivered to @(Model.Recipient.Length > 0 ? Model.Recipient : "banker")</span>
+<strong class="gold-text">@(Model.Result?.DeliveredBars ?? Model.Progress.Delivered)</strong>
+<small>Verified accepted trades</small>
+</div>
+            </div>
+
+            <section class="route-strip" aria-label="Run sequence">
+                <div class="route-stop">
+                    <UiIcon Name="Bank" />
+                    <div><span>CRAFT</span><strong>Abel bank</strong><small>@(Model.Recipe?.NpcName ?? "Record bank setup")</small></div>
+                </div>
+                <span class="route-arrow" aria-hidden="true">→</span>
+                <div class="route-stop">
+                    <UiIcon Name="Courier" />
+                    <div><span>COLLECT</span><strong>@(Model.Courier.Length == 0 ? "Choose courier" : Model.Courier)</strong><small>Collect every character's bars</small></div>
+                </div>
+                <span class="route-arrow" aria-hidden="true">→</span>
+                <div class="route-stop">
+                    <UiIcon Name="Recipient" />
+                    <div><span>DELIVER</span><strong>@(Model.Recipient.Length > 0 ? Model.Recipient : "Choose banker")</strong><small>@Model.BankerDestination</small></div>
+                </div>
+            </section>
+
+            <div class="section-heading">
+<h2>Character roster <span class="count-tag">@Model.Producers.Count(c => c.Enabled) enabled</span></h2>
+<button class="text-button" @onclick='() => activeTab = "Characters"'>Manage characters →</button>
+</div>
+            <CharacterTable Model="Model" />
+
+            <section class="activity-panel">
+<div class="section-heading">
+<h2>Live activity</h2>
+<span class="subtle">@Model.Message</span>
+</div>
+                @if (Model.Activity.Count == 0) { <p class="empty">@(Model.Recipe is null ? "Save your characters and finish bank setup to start your first run." : "Choose the characters above and press Go. Run progress will appear here.")</p> }
+                @foreach (var entry in Model.Activity)
+                { <div class="activity-row">
+<span class="phase-chip" data-state="@entry.Phase">@PhaseLabel(entry.Phase)</span>
+<strong>@entry.Character</strong>
+<span>@entry.Message</span>
+</div> }
+            </section>
+        }
+        else if (activeTab == "Characters")
+        {
+            <div class="intro">
+<h2>Your saved roster</h2>
+<p>Go launches enabled producers, your courier, and a local banker when selected. Uncheck Can craft bars for unregistered producers: they hand gold to registered crafters.</p>
+</div>
+            <CharacterTable Model="Model" Editable="true" />
+            <section class="panel">
+                <h2>Add character or update password</h2>
+                <div class="form-row">
+<label>Character name<input @bind="newName" autocomplete="off" disabled="@(Model.Busy || Model.Recording || Model.Demo)" />
+</label>
+                    <label>Password<input type="password" @bind="newPassword" autocomplete="new-password" disabled="@(Model.Busy || Model.Recording || Model.Demo)" />
+</label>
+                    <button class="primary" disabled="@(Model.Busy || Model.Recording || Model.Demo)" @onclick="SaveCharacter">Save character</button>
+</div>
+                <p class="subtle">Use an existing name to replace its password. Passwords never enter the run history or setup recording.</p>
+            </section>
+            <section class="panel courier-panel">
+<label class="compact-label">Courier<select @bind="Model.Courier" disabled="@(Model.Busy || Model.Recording)">
+<option value="">Choose character</option>@foreach (var character in Model.Producers.Where(c => c.Enabled)) { <option value="@character.Name">@character.Name</option> }</select>
+</label>
+<button @onclick="SaveSettings" disabled="@(Model.Busy || Model.Recording)">Save courier</button>
+</section>
+        }
+        else if (activeTab == "Record setup")
+        {
+            @if (Model.Recipe is not null)
+            { <button class="text-button back-button" @onclick='() => activeTab = "Settings"'>← Back to settings</button> }
+            <div class="intro">
+<h2>Show it once. Run it next time.</h2>
+<p>Record the bank process and a successful sample trade through a manager-launched client. You control the game during recording.</p>
+</div>
+            <div class="setup-steps">
+<div>
+<b>1</b>
+<h3>Make one bar</h3>
+<p>At Abel bank, open the NPC and follow the usual bar-making choices.</p>
+</div>
+<div>
+<b>2</b>
+<h3>Complete a sample trade</h3>
+<p>Trade a sample batch to your banker and accept it there. Use the largest batch you want automated.</p>
+</div>
+<div>
+<b>3</b>
+<h3>Review and save</h3>
+<p>Confirm the learned NPC, cost, bar name, and batch size below.</p>
+</div>
+</div>
+            <section class="panel">
+                <div class="form-row">
+<label>Recording character<select @bind="Model.RecordingCharacter" disabled="@(Model.Busy || Model.Recording || Model.Demo)">
+<option value="">Choose saved character</option>@foreach (var character in Model.Producers) { <option value="@character.Name">@character.Name</option> }</select>
+</label>
+                    <button class="primary" disabled="@(Model.Busy || Model.Recording || Model.Demo)" @onclick="() => Run(Model.StartRecordingAsync)">@Model.RecordingButtonText</button>
+                    <button disabled="@(!Model.Recording)" @onclick="Model.StopRecording">Stop recording</button>
+</div>
+                <div class="notice @(Model.Recording ? "recording" : "")" role="status">@Model.RecordingStatus</div>
+                @if (Model.RecordingError.Length > 0) { <div class="notice error">@Model.RecordingError Restart recording after checking the game.</div> }
+                @{ var learned = Model.RecordedRecipe ?? Model.Recipe; }
+                @if (learned is not null)
+                {
+                    <dl class="recipe-facts">
+<div>
+<dt>Bank NPC</dt>
+<dd>@learned.NpcName</dd>
+</div>
+<div>
+<dt>Map / position</dt>
+<dd>@learned.Map / @learned.X,@learned.Y</dd>
+</div>
+<div>
+<dt>Bar item</dt>
+<dd>@learned.BarName</dd>
+</div>
+<div>
+<dt>Gold per bar</dt>
+<dd>@learned.GoldCost.ToString("N0")</dd>
+</div>
+<div>
+<dt>Verified sample batch</dt>
+<dd>@Model.RecordedBatchSize bars</dd>
+</div>
+<div>
+<dt>Trade display name</dt>
+<dd>@(learned.OfferName ?? learned.BarName)</dd>
+</div>
+</dl>
+                    <ol class="recipe-actions">@foreach (var action in learned.Actions) { <li>@action.Kind: @(action.Value.Length > 0 ? action.Value : "Continue dialog")</li> }</ol>
+                }
+                <button class="primary" disabled="@(!Model.CanSaveRecording)" @onclick="SaveRecording">Save learned setup</button>
+                <p class="subtle">A sample proves a usable batch size, not the server's absolute maximum. Record again to learn a larger batch.</p>
+            </section>
+            <section class="panel">
+<h2>Recording activity</h2>@if (Model.RecordingEvents.Count == 0) { <p class="empty">NPC choices, confirmed bar creation, and accepted sample trades will appear here.</p> }@foreach (var entry in Model.RecordingEvents) { <p class="recording-line">@entry</p> }</section>
+        }
+        else if (activeTab == "Settings")
+        {
+            <div class="intro">
+<h2>Bank run preferences</h2>
+<p>One courier collects every producer's bars and delivers them to your chosen banker.</p>
+</div>
+            <SavedBankSetup Model="Model" ReviewSetup='() => activeTab = "Record setup"' />
+            <fieldset disabled="@(Model.Busy || Model.Recording)">
+                <BankerSettings Model="Model" />
+                <section class="panel form-grid">
+<label>Courier<select @bind="Model.Courier">
+<option value="">Choose character</option>@foreach (var character in Model.Producers.Where(c => c.Enabled)) { <option value="@character.Name">@character.Name</option> }</select>
+</label>
+<label>Bars per trade<input type="number" min="1" max="59" @bind="Model.BatchSize" />
+</label>
+<label>Deposit wait (seconds)<input type="number" min="0" max="3600" @bind="Model.DepositWaitSeconds" disabled="@(Model.BankerMode == BankerMode.Local)" />
+</label>
+<label>Weight per bar<input type="number" min="0" max="1000" @bind="Model.BarWeight" />
+</label>
+<label class="check-label">
+<input type="checkbox" @bind="Model.PoolGold" /> Pool leftover gold for more bars</label>
+</section>
+                <section class="panel">
+<h2>Game connection</h2>
+<label>Supported Darkages.exe path<input @bind="Model.ClientPath" placeholder="Select the same supported client used by DAQuester" disabled="@Model.Demo" />
+</label>
+<div class="form-row">
+<label>Server address<input @bind="Model.ServerAddress" disabled="@Model.Demo" />
+</label>
+<label>Server port<input type="number" @bind="Model.ServerPort" disabled="@Model.Demo" />
+</label>
+</div>
+<p class="subtle">Use the supported DATester 7.41 client. Existing clients launched by other apps cannot be attached.</p>
+</section>
+                <button class="primary" @onclick="SaveSettings">Save settings</button>
+            </fieldset>
+            <UpdateSettings />
+        }
+        else if (activeTab == "History")
+        {
+            <div class="intro">
+<h2>Verified operations</h2>
+<p>Every craft and transfer is recorded before it starts and after its outcome is checked.</p>
+</div>
+            @if (Model.NeedsReview)
+            { <div class="notice error">
+<div>Interrupted operations need review. Check affected characters' actual balances before starting again.<label class="check-label">
+<input type="checkbox" @bind="reviewChecked" /> I checked affected characters and want a fresh scan.</label>
+</div>
+<button disabled="@(!reviewChecked || Model.Busy || Model.Recording)" @onclick="AcknowledgeReview">Acknowledge review</button>
+</div> }
+            <div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Operation</th>
+<th>Character</th>
+<th>Recipient</th>
+<th class="numeric">Amount</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody>@foreach (var operation in Model.History) { <tr>
+<td class="data-text">@operation.Time.ToLocalTime().ToString("HH:mm:ss")</td>
+<td>@operation.Kind</td>
+<td>@operation.Sender</td>
+<td>@operation.Receiver</td>
+<td class="numeric">@operation.Amount.ToString("N0")</td>
+<td>
+<span class="phase-chip" data-state="@operation.Outcome">@operation.Outcome</span>@if (operation.Detail.Length > 0) { <small>@operation.Detail</small> }</td>
+</tr> }</tbody>
+</table>@if (Model.History.Count == 0) { <p class="empty">No operations yet. Your completed and interrupted runs will stay here.</p> }</div>
+        }
+        <footer>DAMiner v@Updates.CurrentVersion <span>Craft at Abel · Collect with one courier · Deliver to your banker</span>
+</footer>
+    </main>
+</div>
+
+@code {
+    readonly string[] tabs = ["Operations", "Characters", "Record setup", "Settings", "History"];
+    // Keep unfinished setup reachable; completed setup belongs in Settings.
+    IEnumerable<string> VisibleTabs => Model.Recipe is null || Model.RecordedRecipe is not null || Model.Recording
+        ? tabs : tabs.Where(tab => tab != "Record setup");
+    string activeTab = "Operations";
+    string newName = "", newPassword = "";
+    bool reviewChecked;
+    protected override void OnInitialized()
+    {
+        Model.Changed += Refresh;
+        Updates.Changed += Refresh;
+        if (!Model.Demo && Model.Recipe is null)
+            activeTab = Model.Characters.Length == 0 ? "Characters" : "Record setup";
+    }
+    protected override void OnAfterRender(bool firstRender) { if (firstRender) Updates.Start(); }
+    void Refresh() => _ = InvokeAsync(StateHasChanged);
+    public void Dispose() { Model.Changed -= Refresh; Updates.Changed -= Refresh; }
+    async Task Run(Func<Task> action) { try { await action(); } catch (Exception error) { Model.ShowError(error); } }
+    void SaveCharacter() { try { Model.SaveCharacter(newName, newPassword); newName = newPassword = ""; } catch (Exception error) { Model.ShowError(error); } }
+    void SaveSettings() { try { Model.SaveSettings(); } catch (Exception error) { Model.ShowError(error); } }
+    void SaveRecording() { try { Model.SaveRecording(); activeTab = "Operations"; } catch (Exception error) { Model.ShowError(error); } }
+    void AcknowledgeReview() { try { Model.AcknowledgeReview(); reviewChecked = false; } catch (Exception error) { Model.ShowError(error); } }
+    static string PhaseLabel(RunPhase phase) => phase switch
+    {
+        RunPhase.Idle => "Ready", RunPhase.PoolingGold => "Pooling gold", RunPhase.WaitingForDeposit => "Waiting for deposit",
+        RunPhase.NeedsReview => "Needs review", RunPhase.WaitingForCollection => "Waiting for courier", _ => phase.ToString()
+    };
+}

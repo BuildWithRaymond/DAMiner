@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Setup guide
+    url: https://github.com/BuildWithRaymond/DAMiner/blob/main/docs/usage.md
+    about: Read setup and operating instructions.
+  - name: Sensitive security report
+    url: https://github.com/BuildWithRaymond/DAMiner/security/advisories/new
+    about: Report security problems privately.

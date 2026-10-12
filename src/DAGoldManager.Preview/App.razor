@@ -1,0 +1,19 @@
+@using Microsoft.AspNetCore.Components.Web
+@using DAGoldManager.UI
+@namespace DAGoldManager.Preview
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="/" />
+    <title>DAMiner · Preview</title>
+    <link rel="icon" type="image/png" href="_content/DAGoldManager.UI/images/gold-bar.png" />
+    <link rel="stylesheet" href="_content/DAGoldManager.UI/gold.css" />
+</head>
+<body>
+    <Dashboard @rendermode="new InteractiveServerRenderMode(prerender: false)" />
+    <div id="blazor-error-ui">The preview stopped. <a href=".">Reload</a></div>
+    <script src="_framework/blazor.web.js"></script>
+</body>
+</html>

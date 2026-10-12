@@ -1,0 +1,95 @@
+﻿<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Use</th>
+                <th>Character</th>
+                <th>Role</th>
+                <th>Can craft bars</th>
+                <th class="numeric">Gold</th>
+                <th class="numeric">Bars</th>
+                <th>Location</th>
+                <th>Status</th>
+                @if (Editable) { <th></th> }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var character in Model.Characters)
+            {
+                var state = Model.States.FirstOrDefault(c => c.Name.Equals(character.Name, StringComparison.OrdinalIgnoreCase));
+                bool banker = character.Name.Equals(Model.Recipient, StringComparison.OrdinalIgnoreCase);
+                bool external = banker && Model.BankerMode == BankerMode.External;
+                bool courier = character.Name == Model.Courier;
+                bool donor = !character.CanCraftBars || state?.Registered == false;
+                string role = banker ? external ? "External banker" : "Banker" : courier ? "Courier" : donor ? "Gold donor" : "Crafter";
+                string status = external ? "Independent client" : !character.Enabled ? "Disabled" :
+                    Model.CharacterStatus(character.Name, state is not null);
+
+                <tr @key="character.Name" class="@(!character.Enabled ? "disabled-row" : "")">
+                    <td>
+                        <input type="checkbox" aria-label="Enable @character.Name" checked="@character.Enabled"
+                               disabled="@(Model.Busy || Model.Recording || external)"
+                               @onchange="e => SetEnabled(character.Name, e.Value is true)" />
+                    </td>
+                    <td>
+                        <div class="character-identity">
+                            <span class="character-avatar @(courier ? "courier-avatar" : "")" aria-hidden="true">@character.Name[..1]</span>
+                            <div><strong class="character-name">@character.Name</strong>
+                            <small>@(external ? "No local login" : Model.Demo ? "Preview character" : Model.PasswordSaved(character.Name) ? "Password saved" : "Password needed")</small></div>
+                        </div>
+                    </td>
+                    <td><span class="role-tag @(courier ? "courier-tag" : donor ? "donor-tag" : "")">@role</span></td>
+                    <td>
+                        @if (Editable && !banker)
+                        {
+                            <input type="checkbox" aria-label="Can craft bars: @character.Name" checked="@character.CanCraftBars"
+                                   disabled="@(Model.Busy || Model.Recording)"
+                                   @onchange="e => SetCanCraftBars(character.Name, e.Value is true)" />
+                        }
+                        else { <span>@(banker ? "Receives bars" : donor ? "Donates gold" : "Yes")</span> }
+                        @if (state?.Registered == false) { <small>Server: unregistered</small> }
+                    </td>
+                    <td class="numeric">@(state?.Gold.ToString("N0") ?? "—")</td>
+                    <td class="numeric">@(state?.Bars.ToString() ?? "—")</td>
+                    <td>@(external ? "VPS" : state is null ? "Awaiting launch" : $"{state.Map} · {state.X},{state.Y}")</td>
+                    <td><span class="state-badge @(!character.Enabled ? "muted" : "")">@status</span></td>
+                    @if (Editable)
+                    {
+                        <td>
+                            <button class="text-button" aria-label="Remove @character.Name"
+                                    disabled="@(Model.Busy || Model.Recording || Model.Demo)"
+                                    @onclick="() => Remove(character.Name)">Remove</button>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+    @if (Model.Characters.Length == 0)
+    {
+        <p class="empty">Add your first character in Characters, then record the bank process.</p>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public DashboardModel Model { get; set; } = null!;
+    [Parameter] public bool Editable { get; set; }
+
+    void SetEnabled(string name, bool value)
+    {
+        try { Model.SetEnabled(name, value); }
+        catch (Exception error) { Model.ShowError(error); }
+    }
+
+    void Remove(string name)
+    {
+        try { Model.RemoveCharacter(name); }
+        catch (Exception error) { Model.ShowError(error); }
+    }
+
+    void SetCanCraftBars(string name, bool value)
+    {
+        try { Model.SetCanCraftBars(name, value); }
+        catch (Exception error) { Model.ShowError(error); }
+    }
+}
