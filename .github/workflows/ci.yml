@@ -1,0 +1,42 @@
+name: Windows checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Fork pull requests receive read-only access and never use live accounts.
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-checks:
+    name: Windows checks
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - name: Install Windows MAUI workload
+        run: dotnet workload install maui-windows
+      - name: Test simulated workflows and build Windows app
+        run: ./tools/Build.ps1
+      - name: Check private-data exclusion and public branding
+        run: |
+          ./tools/tests/Test-ReleaseContents.Tests.ps1
+          ./tools/tests/Initialize-Branding.Tests.ps1
+      - name: Build simulation-only browser host
+        run: |
+          dotnet build src/DAGoldManager.Preview -c Release -m:1
+          if ($LASTEXITCODE -ne 0) { throw 'Preview build failed.' }
