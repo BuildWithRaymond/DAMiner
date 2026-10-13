@@ -21,6 +21,26 @@ try {
   await page.getByRole('heading', { name: 'Operations', exact: true }).waitFor();
   assert.match(await page.locator('footer').innerText(), /DAMiner v\d+\.\d+\.\d+/,
     'The version expression must render a numeric version instead of literal Razor text');
+  // Settings is longer than one screen: its rail must reach the page bottom,
+  // while navigation remains available after scrolling to the last section.
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await page.getByRole('heading', { name: 'Application updates', exact: true }).waitFor();
+  const rail = await page.evaluate(() => ({
+    bottom: document.querySelector('.sidebar').getBoundingClientRect().bottom,
+    pageBottom: document.querySelector('.app-shell').getBoundingClientRect().bottom,
+    viewportHeight: window.innerHeight,
+  }));
+  assert.ok(rail.pageBottom > rail.viewportHeight, 'Use a page that needs scrolling');
+  assert.ok(Math.abs(rail.bottom - rail.pageBottom) <= 1,
+    'The sidebar background must extend to the bottom of a long page');
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await page.waitForFunction(() => window.scrollY > 0);
+  const navigation = await page.getByRole('navigation').boundingBox();
+  assert.ok(navigation.y >= 0 && navigation.y + navigation.height <= rail.viewportHeight,
+    'Navigation must stay visible when the page is scrolled to the bottom');
+  await page.getByRole('button', { name: 'Operations', exact: true }).click();
+  await page.getByRole('heading', { name: 'Operations', exact: true }).waitFor();
+  await page.evaluate(() => window.scrollTo(0, 0));
   assert.equal(await page.getByRole('navigation').getByRole('button', { name: 'Record setup', exact: true }).count(), 0,
     'A saved recipe must keep recording out of daily navigation');
   assert.equal(await page.getByRole('row').count(), 5);
@@ -138,8 +158,10 @@ try {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
 
   assert.deepEqual(errors, []);
-  console.log('UI checks passed: roster controls, donor runs, disabled character skipped, custom external banker destination, local banker at Abel bank and five verified deposits, recorder isolation, settings, compact layout.');
+  console.log('UI checks passed: full-height sidebar and sticky navigation, roster controls, donor runs, disabled character skipped, custom external banker destination, local banker at Abel bank and five verified deposits, recorder isolation, settings, compact layout.');
 } catch (error) {
+  // Print before browser cleanup so a slow Chrome shutdown cannot hide the failure.
+  console.error(error);
   await capture('failure');
   throw error;
 } finally {

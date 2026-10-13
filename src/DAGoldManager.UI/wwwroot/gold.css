@@ -74,14 +74,20 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
     min-height: 100vh;
 }
 .sidebar {
+    /* The rail stretches with the grid so long pages keep a continuous background. */
     background: var(--sidebar);
+    border-right: 1px solid var(--line);
+}
+.sidebar-content {
+    /* Only the controls stick to the viewport; the rail itself fills the page. */
     padding: 28px 16px 24px;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid var(--line);
     position: sticky;
     top: 0;
     height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
 }
 .wordmark {
     display: flex;
@@ -793,7 +799,7 @@ footer {
     .app-shell {
         grid-template-columns: 192px minmax(0, 1fr);
     }
-    .sidebar {
+    .sidebar-content {
         padding-left: 12px;
         padding-right: 12px;
     }
@@ -870,8 +876,13 @@ footer {
         display: block;
     }
     .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+    }
+    .sidebar-content {
         position: static;
         height: auto;
+        overflow: visible;
         padding: 16px 18px 12px;
     }
     .sidebar-caption, .sidebar-bottom {

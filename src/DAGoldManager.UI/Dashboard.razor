@@ -4,22 +4,23 @@
 
 <div class="app-shell">
     <aside class="sidebar">
-        <div class="wordmark">
-<span class="bar-mark"><img src="_content/DAGoldManager.UI/images/gold-bar.png" alt="" /></span>
-<div>DAMiner<span>GOLD OPERATIONS</span>
-</div>
-</div>
-        <p class="sidebar-caption">Your gold. One destination.</p>
-        <nav aria-label="Main navigation">
-            @foreach (var tab in VisibleTabs)
-            {
-                <button class="nav-button @(activeTab == tab ? "selected" : "")" aria-current="@(activeTab == tab ? "page" : null)" @onclick="() => activeTab = tab"><UiIcon Name="@tab" /><span>@tab</span></button>
-            }
-        </nav>
-        <div class="sidebar-bottom">
-<span class="status-dot">
-</span>@(Model.Demo ? "Simulated preview" : "Windows desktop")<small>@(Model.Demo ? "Fictional characters only" : "Local workspace")</small>
-</div>
+        <div class="sidebar-content">
+            <div class="wordmark">
+                <span class="bar-mark"><img src="_content/DAGoldManager.UI/images/gold-bar.png" alt="" /></span>
+                <div>DAMiner<span>GOLD OPERATIONS</span></div>
+            </div>
+            <p class="sidebar-caption">Your gold. One destination.</p>
+            <nav aria-label="Main navigation">
+                @foreach (var tab in VisibleTabs)
+                {
+                    <button class="nav-button @(activeTab == tab ? "selected" : "")" aria-current="@(activeTab == tab ? "page" : null)" @onclick="() => activeTab = tab"><UiIcon Name="@tab" /><span>@tab</span></button>
+                }
+            </nav>
+            <div class="sidebar-bottom">
+                <span class="status-dot"></span>@(Model.Demo ? "Simulated preview" : "Windows desktop")
+                <small>@(Model.Demo ? "Fictional characters only" : "Local workspace")</small>
+            </div>
+        </div>
     </aside>
 
     <main>
