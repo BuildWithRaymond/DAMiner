@@ -6,9 +6,9 @@
     <ProjectReference Include="../../src/DAGoldManager.Game/DAGoldManager.Game.csproj" />
     <ProjectReference Include="../../src/DAGoldManager.Storage/DAGoldManager.Storage.csproj" />
     <ProjectReference Include="../../src/DAGoldManager.UI/DAGoldManager.UI.csproj" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-    <PackageReference Include="xunit" Version="2.9.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="../../content/**" Link="content/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
