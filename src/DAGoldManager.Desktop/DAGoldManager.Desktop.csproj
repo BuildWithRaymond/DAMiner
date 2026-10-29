@@ -23,7 +23,7 @@
   <ItemGroup>
     <AssemblyMetadata Include="UpdateRepository" Value="$(UpdateRepository)" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.120" />
     <ProjectReference Include="../DAGoldManager.UI/DAGoldManager.UI.csproj" />
     <MauiIcon Include="Resources/AppIcon/appicon.png" />
     <Content Include="Resources/AppIcon/appicon.ico" Link="DAMiner.ico" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
