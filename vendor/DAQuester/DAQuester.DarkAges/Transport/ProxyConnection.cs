@@ -306,7 +306,7 @@ public sealed partial class ProxyConnection(TcpClient client, TcpClient remote, 
         }
     }
 
-    public async Task PresentPopupCloseAsync(DAQuester.Core.ServerNotice expected, CancellationToken ct)
+    public async Task<bool> PresentPopupCloseAsync(DAQuester.Core.ServerNotice expected, CancellationToken ct)
     {
         await toClient.WaitAsync(ct);
         try
@@ -315,16 +315,18 @@ public sealed partial class ProxyConnection(TcpClient client, TcpClient remote, 
             var state = Tracker.Snapshot;
             if (!Connected || !state.Connected || state.Generation != expected.Generation)
                 throw new IOException("Session generation no longer active.");
-            if (state.Popup != expected || dismissedPopupRevision == expected.Revision) return;
+            if (state.Popup != expected) return false;
+            if (dismissedPopupRevision == expected.Revision) return true;
             // ClosePopup is client presentation only. Never publish a fabricated server snapshot.
             presenting = true;
             await client.GetStream().WriteAsync(serverCrypto.Encrypt(new ServerPacket(0x0A, [17, 0, 0]), clientSequence++).ToArray(), lifetime.Token);
             dismissedPopupRevision = expected.Revision;
+            return true;
         }
         finally { toClient.Release(); }
     }
 
-    public async Task SendAsync(ClientPacket packet, long expectedGeneration, CancellationToken token, DAQuester.Core.Tile? movementOrigin = null, bool presentMovement = false, int movementCapacity = 1, Func<bool>? movementAllowed = null)
+    public async Task SendAsync(ClientPacket packet, long expectedGeneration, CancellationToken token, DAQuester.Core.Tile? movementOrigin = null, bool presentMovement = false, int movementCapacity = 1, Func<bool>? movementAllowed = null, Func<bool>? sendAllowed = null)
     {
         await toServer.WaitAsync(token);
         try
@@ -332,6 +334,9 @@ public sealed partial class ProxyConnection(TcpClient client, TcpClient remote, 
             token.ThrowIfCancellationRequested();
             if (!Connected || Tracker.Snapshot.Generation != expectedGeneration || !Tracker.Snapshot.Connected)
                 throw new IOException("Session generation no longer active.");
+            // A response may arrive while this write waits behind another command.
+            // A skipped empty opening must not consume a sequence or disturb its late window.
+            if (sendAllowed?.Invoke() == false) return;
             if ((byte)packet.Command is 0x39 or 0x3A)
                 DialogAction?.Invoke(packet);
             bool movement = (byte)packet.Command == 0x06 && packet.Data.Length >= 1;

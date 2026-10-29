@@ -6,6 +6,7 @@
                 <th>Character</th>
                 <th>Role</th>
                 <th>Can craft bars</th>
+                <th>Fast mode</th>
                 <th class="numeric">Gold</th>
                 <th class="numeric">Bars</th>
                 <th>Location</th>
@@ -49,6 +50,15 @@
                         else { <span>@(banker ? "Receives bars" : donor ? "Donates gold" : "Yes")</span> }
                         @if (state?.Registered == false) { <small>Server: unregistered</small> }
                     </td>
+                    <td>
+                        @if (!external)
+                        {
+                            <input type="checkbox" aria-label="Fast mode: @character.Name" checked="@character.FastMode"
+                                   @onchange="e => SetFastMode(character.Name, e.Value is true)" />
+                            <small>@Model.FastModeDescription(character.Name)</small>
+                        }
+                        else { <span>Independent client</span> }
+                    </td>
                     <td class="numeric">@(state?.Gold.ToString("N0") ?? "—")</td>
                     <td class="numeric">@(state?.Bars.ToString() ?? "—")</td>
                     <td>@(external ? "VPS" : state is null ? "Awaiting launch" : $"{state.Map} · {state.X},{state.Y}")</td>
@@ -90,6 +100,12 @@
     void SetCanCraftBars(string name, bool value)
     {
         try { Model.SetCanCraftBars(name, value); }
+        catch (Exception error) { Model.ShowError(error); }
+    }
+
+    void SetFastMode(string name, bool value)
+    {
+        try { Model.SetFastMode(name, value); }
         catch (Exception error) { Model.ShowError(error); }
     }
 }

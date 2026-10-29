@@ -35,28 +35,129 @@ public sealed partial class GameGateway
         var participants = recipient is null ? new[] { donor } : new[] { donor, recipient };
         return Control(participants, async token =>
         {
-            var target = RequirePlayer(donor, receiverName);
+            await PrepareVerifiedTradeDialogs(participants, token);
+            TradeReadiness.RequireClosedWindows(donor.TradeWindow.BlocksNewTrade, recipient?.TradeWindow.BlocksNewTrade == true);
             var before = donor.Snapshot;
             var recipientBefore = recipient?.Snapshot;
-            if (recipient is not null && target.Id != recipientBefore!.Id)
+            // Managed identities come from their own authenticated sessions. Their
+            // draw in the sender's view may still be catching up after arrival.
+            var target = recipientBefore is null ? RequirePlayer(donor, receiverName) :
+                new Entity(recipientBefore.Id ?? throw new InvalidOperationException("Managed receiver identity is missing."),
+                    recipientBefore.Name ?? throw new InvalidOperationException("Managed receiver name is missing."),
+                    recipientBefore.Position ?? throw new InvalidOperationException("Managed receiver position is missing."), true) { IsPlayer = true };
+            if (!target.Name.Equals(receiverName, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("Visible player does not match managed recipient identity.");
             string barName = RequireRecipe().BarName;
             string offerName = RequireRecipe().OfferName ?? barName;
             using var observed = new ObservedTrade(donor, offerName);
             using var recipientObserved = recipient is null ? null : new ObservedTrade(recipient, offerName);
-            bool accepted = false;
+            bool openingSent = false;
+            bool acceptanceStarted = false;
             string stage = "opening the sender's trade window";
+            void ValidateIdentities()
+            {
+                TradeReadiness.ValidateIdentities(donor.Snapshot, recipient?.Snapshot, target, before, recipientBefore);
+                if (observed.Error is { } senderError) throw new InvalidOperationException(senderError);
+                if (recipientObserved?.Error is { } receiverError) throw new InvalidOperationException(receiverError);
+            }
+            void ValidateParticipants()
+            {
+                ValidateIdentities();
+                TradeReadiness.Validate(donor.Snapshot, recipient?.Snapshot, target, before.Generation, recipientBefore?.Generation);
+            }
+            string OpeningContext() => $"Sender window started: {observed.Monitor.View.Started}; " +
+                (recipientObserved is null ? "external receiver." : $"receiver window started: {recipientObserved.Monitor.View.Started}." +
+                    (recipientObserved.LastNotice is { } notice ? " Receiver's last server notice: " + notice : ""));
             bool ReceiverConfirmsGold() => recipientObserved is not null &&
                 GoldOfferEvidence.IsConfirmed(observed.Monitor.View, recipientObserved.Monitor.View, gold);
+            bool EmptyOpeningIsUnchanged()
+            {
+                ValidateParticipants();
+                if (observed.Error is { } senderError) throw new InvalidOperationException(senderError);
+                // No offer or acceptance has been sent yet. Any server exchange
+                // evidence ends recovery permanently, even if it lacks Started.
+                return recipient is not null && recipientObserved is not null &&
+                    !observed.HasExchangeEvidence && !recipientObserved.HasExchangeEvidence &&
+                    !donor.TradeWindow.BlocksNewTrade && !recipient.TradeWindow.BlocksNewTrade &&
+                    TradeReadiness.MutuallyVisible(donor.Snapshot, recipient.Snapshot) &&
+                    UnchangedOpeningBalance(before, donor.Snapshot) && UnchangedOpeningBalance(recipientBefore!, recipient.Snapshot);
+            }
+            int openingRequests = 1;
+            TimeSpan nextOpening = TimeSpan.FromSeconds(2);
+            var openingClock = new System.Diagnostics.Stopwatch();
+            async Task RecoverEmptyOpening(TimeSpan _, CancellationToken token)
+            {
+                if (openingRequests >= 3 || openingClock.Elapsed < nextOpening || !EmptyOpeningIsUnchanged()) return;
+                openingRequests++;
+                // Repeat only an empty local request. The wire guard rechecks after
+                // acquiring its lock so a late window is used rather than replaced.
+                await donor.Connection.SendAsync(ExchangePackets.Create(ExchangeClientActionType.BeginExchange, target.Id),
+                    before.Generation, token, sendAllowed: EmptyOpeningIsUnchanged);
+                // The wire lock can delay submission. Pace from its actual return,
+                // rather than letting a queued request make the next one overdue.
+                nextOpening = openingClock.Elapsed + TimeSpan.FromSeconds(2);
+            }
             try
             {
-                await SendExchange(donor, ExchangeClientActionType.BeginExchange, target.Id, token);
-                await WaitTrade(observed, v => v.Started, token);
+                if (recipient is not null)
+                {
+                    stage = "waiting for managed players to settle into trade range";
+                    var settleTimeout = TimeSpan.FromSeconds(Math.Min(5, TradeResponseTimeout.TotalSeconds));
+                    using var settling = CancellationTokenSource.CreateLinkedTokenSource(token);
+                    settling.CancelAfter(settleTimeout);
+                    string ArrivalContext() => OpeningContext() + " " + TradeLocationContext(donor.Snapshot, recipient.Snapshot);
+                    void ValidateArrival()
+                    {
+                        ValidateIdentities();
+                        TradeReadiness.RequireClosedWindows(donor.TradeWindow.BlocksNewTrade, recipient.TradeWindow.BlocksNewTrade);
+                        if (!UnchangedOpeningBalance(before, donor.Snapshot) || !UnchangedOpeningBalance(recipientBefore!, recipient.Snapshot))
+                            throw new InvalidOperationException("Managed balances changed while waiting for arrival. No trade request or offer was sent.");
+                    }
+                    try
+                    {
+                        while (!openingSent)
+                        {
+                            await observed.WaitAsync(_ => TradeReadiness.ManagedParticipantsReady(donor.Snapshot, recipient.Snapshot),
+                                settleTimeout, settling.Token, ArrivalContext, ValidateArrival);
+                            // The sender's wire lock can outlast the observed arrival.
+                            // A skipped opening returns to readiness waiting, never to a
+                            // value-bearing command or an unbounded response wait.
+                            await donor.Connection.SendAsync(ExchangePackets.Create(ExchangeClientActionType.BeginExchange, target.Id),
+                                before.Generation, settling.Token, sendAllowed: () =>
+                                {
+                                    ValidateArrival();
+                                    if (!TradeReadiness.ManagedParticipantsReady(donor.Snapshot, recipient.Snapshot)) return false;
+                                    ValidateParticipants();
+                                    stage = "opening the sender's trade window";
+                                    openingSent = true;
+                                    return true;
+                                });
+                        }
+                    }
+                    catch (OperationCanceledException) when (!token.IsCancellationRequested)
+                    {
+                        if (openingSent)
+                            throw new TimeoutException("Trade opening write did not finish within the arrival deadline. " +
+                                ArrivalContext() + " No offer was sent; inspect any exchange window before another run.");
+                        throw new TimeoutException($"Managed players did not settle into trade range within {settleTimeout.TotalSeconds:0.###} seconds. " +
+                            ArrivalContext() + " No trade request or offer was sent.");
+                    }
+                }
+                else
+                {
+                    ValidateParticipants();
+                    openingSent = true;
+                    await SendExchange(donor, ExchangeClientActionType.BeginExchange, target.Id, token);
+                }
+                stage = "opening the sender's trade window";
+                openingClock.Start();
+                await observed.WaitAsync(v => v.Started, TradeResponseTimeout, token, OpeningContext, ValidateParticipants,
+                    recipient is null ? null : RecoverEmptyOpening);
                 CheckPartner(observed.Monitor.View, target);
                 if (recipientObserved is not null)
                 {
                     stage = "opening the receiver's trade window";
-                    await WaitTrade(recipientObserved, v => v.Started, token);
+                    await WaitTrade(recipientObserved, v => v.Started, token, OpeningContext, ValidateParticipants);
                     CheckPartner(recipientObserved.Monitor.View, new(before.Id!.Value, before.Name!, before.Position!, true) { IsPlayer = true });
                 }
 
@@ -82,13 +183,20 @@ public sealed partial class GameGateway
                     EnsureOffer(recipientObserved.Monitor.View, bars, gold, sending: false);
                 }
                 // Last fresh checks before committing either side's acceptance.
+                ValidateParticipants();
                 if (RequirePlayer(donor, receiverName).Id != target.Id || donor.Snapshot.Generation != before.Generation)
                     throw new InvalidOperationException("Trade partner changed before acceptance.");
                 stage = "sending acceptance";
+                _ = CheckedTrade();
+                // A write can fail after reaching the server. From this point,
+                // the outcome may be committed and cancellation must not guess.
+                acceptanceStarted = true;
                 await SendExchange(donor, ExchangeClientActionType.Accept, target.Id, token);
-                accepted = true;
                 if (recipient is not null)
+                {
+                    _ = CheckedTrade();
                     await SendExchange(recipient, ExchangeClientActionType.Accept, before.Id!.Value, token);
+                }
 
                 TradeView CheckedTrade()
                 {
@@ -108,23 +216,79 @@ public sealed partial class GameGateway
                 Func<CharacterSnapshot>? readRecipient = recipient is null ? null : () => recipient.Snapshot;
                 stage = "verifying the completed transfer's balances";
                 await TradeConfirmation.WaitAsync(CheckedTrade, () => donor.Snapshot, readRecipient,
-                    before, recipientBefore, bars, gold, barName, TimeSpan.FromSeconds(settings.TradeTimeoutSeconds), token);
+                    before, recipientBefore, bars, gold, barName, TradeResponseTimeout, token);
                 completedTradeBaselines[before.Name!] = (before.Generation, before.Revision);
+                donor.TradeWindow.ConfirmVerifiedCompletion();
                 if (recipientBefore is not null)
+                {
                     completedTradeBaselines[recipientBefore.Name!] = (recipientBefore.Generation, recipientBefore.Revision);
+                    recipient!.TradeWindow.ConfirmVerifiedCompletion();
+                }
             }
             catch (Exception error)
             {
                 // Before acceptance, cancelling an open offer is safe. After acceptance, rescan instead of guessing.
-                if (!accepted && observed.Monitor.View.Started && donor.Snapshot.Connected)
+                if (!acceptanceStarted && openingSent)
                 {
-                    try { await SendExchange(donor, ExchangeClientActionType.Cancel, target.Id, CancellationToken.None); }
+                    // Cancel only the intended exchange observed on this attempt.
+                    // A missing sender echo can still leave the managed receiver open.
+                    try
+                    {
+                        if (StartedWith(observed.Monitor.View, target) && donor.Snapshot.Connected && donor.Snapshot.Generation == before.Generation)
+                            await SendExchange(donor, ExchangeClientActionType.Cancel, target.Id, CancellationToken.None);
+                        else if (recipient is not null && recipientObserved is not null && before.Id is { } senderId &&
+                            StartedWith(recipientObserved.Monitor.View, new(senderId, before.Name!, before.Position!, true) { IsPlayer = true }) &&
+                            recipient.Snapshot.Connected && recipient.Snapshot.Generation == recipientBefore!.Generation)
+                            await SendExchange(recipient, ExchangeClientActionType.Cancel, senderId, CancellationToken.None);
+                    }
                     catch (Exception) { Diagnostic?.Invoke("Trade cancellation could not be confirmed; inspect the game window."); }
                 }
-                if (error is OperationCanceledException) throw;
+                if (error is OperationCanceledException interrupted)
+                    throw new TradeCancellationException(stage, acceptanceStarted, cancellation.IsCancellationRequested, interrupted);
                 throw new InvalidOperationException($"Trade stopped while {stage}: {error.Message}", error);
             }
         }, cancellation);
+    }
+
+    static string TradeLocationContext(CharacterSnapshot sender, CharacterSnapshot receiver)
+    {
+        static string Position(Tile? position) => position is null ? "unknown" : $"({position.X},{position.Y})";
+        static string Seen(CharacterSnapshot observer, CharacterSnapshot partner) => partner.Id is { } id &&
+            observer.Entities.TryGetValue(id, out var visible) ? Position(visible.Position) : "not observed";
+        return $"{sender.Name} own: map {sender.Map} {Position(sender.Position)}; " +
+            $"{receiver.Name} own: map {receiver.Map} {Position(receiver.Position)}; " +
+            $"{sender.Name} sees {receiver.Name}: {Seen(sender, receiver)}; " +
+            $"{receiver.Name} sees {sender.Name}: {Seen(receiver, sender)}.";
+    }
+
+    static bool StartedWith(TradeView view, Entity target) => view.Started && view.TargetId == target.Id &&
+        view.TargetName.Equals(target.Name, StringComparison.OrdinalIgnoreCase);
+
+    static bool UnchangedOpeningBalance(CharacterSnapshot before, CharacterSnapshot after) =>
+        before.Connected && after.Connected && before.Generation == after.Generation && before.Id == after.Id &&
+        string.Equals(before.Name, after.Name, StringComparison.OrdinalIgnoreCase) &&
+        before.Gold is not null && before.Gold == after.Gold && before.InventoryKnown && after.InventoryKnown &&
+        before.Inventory.Count == after.Inventory.Count &&
+        before.Inventory.All(item => after.Inventory.TryGetValue(item.Key, out var current) && current == item.Value);
+
+    async Task PrepareVerifiedTradeDialogs(CharacterConnection[] participants, CancellationToken cancellation)
+    {
+        foreach (var character in participants)
+        {
+            string name = character.Snapshot.Name!;
+            if (lastCraftRequest.ContainsKey(name))
+            {
+                await CraftDialogCleanup.FinishAsync(CraftRecipeFor(character), () => character.Snapshot,
+                    (command, ct) => character.Session.ExecuteAsync(command, ct), cancellation);
+                lastCraftRequest.TryRemove(name, out _);
+            }
+            if (completedTradeBaselines.TryGetValue(name, out var baseline) &&
+                TradePopupCleanup.CompletionPopup(character.Snapshot, baseline.Generation, baseline.Revision) is { } completion &&
+                await character.Connection.PresentPopupCloseAsync(completion, cancellation))
+            {
+                completedTradeBaselines.TryRemove(name, out _);
+            }
+        }
     }
 
     public Task FinishTradeDialogsAsync(string sender, string receiver, CancellationToken cancellation)
@@ -140,6 +304,11 @@ public sealed partial class GameGateway
             {
                 string name = character.Snapshot.Name!;
                 if (!completedTradeBaselines.TryGetValue(name, out var baseline)) continue;
+                if (character.Snapshot.Generation != baseline.Generation)
+                {
+                    completedTradeBaselines.TryRemove(name, out _);
+                    continue;
+                }
                 bool FreshPopup(CharacterSnapshot state) => state.Popup is { } popup &&
                     popup.Generation == baseline.Generation && popup.Revision > baseline.Revision;
                 if (!FreshPopup(character.Snapshot))
@@ -148,9 +317,11 @@ public sealed partial class GameGateway
                     try { await character.Session.WaitAsync(FreshPopup, baseline.Revision, TimeSpan.FromSeconds(2), token); }
                     catch (TimeoutException) { }
                 }
-                if (TradePopupCleanup.CompletionPopup(character.Snapshot, baseline.Generation, baseline.Revision) is { } completion)
-                    await character.Connection.PresentPopupCloseAsync(completion, token);
-                completedTradeBaselines.TryRemove(name, out _);
+                if (TradePopupCleanup.CompletionPopup(character.Snapshot, baseline.Generation, baseline.Revision) is { } completion &&
+                    await character.Connection.PresentPopupCloseAsync(completion, token))
+                    completedTradeBaselines.TryRemove(name, out _);
+                // The popup is optional and may arrive after this short wait.
+                // Keep its verified baseline for cleanup before the next exchange.
             }
         }, cancellation);
     }
@@ -195,45 +366,10 @@ public sealed partial class GameGateway
         CancellationToken cancellation, byte slot = 0, byte quantity = 1, uint gold = 0)
         => character.Connection.SendAsync(ExchangePackets.Create(action, target, slot, quantity, gold), character.Snapshot.Generation, cancellation);
 
-    static async Task WaitTrade(ObservedTrade trade, Func<TradeView, bool> ready, CancellationToken cancellation, int seconds = 8)
-    {
-        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
-        timeout.CancelAfter(TimeSpan.FromSeconds(seconds));
-        try
-        {
-            while (true)
-            {
-                timeout.Token.ThrowIfCancellationRequested();
-                if (trade.Error is not null) throw new InvalidOperationException(trade.Error);
-                var view = trade.Monitor.View;
-                if (view.Cancelled || view.UnexpectedItem) throw new InvalidOperationException("Trade was cancelled or contains unexpected items.");
-                if (ready(view)) return;
-                await Task.Delay(25, timeout.Token);
-            }
-        }
-        catch (OperationCanceledException) when (!cancellation.IsCancellationRequested)
-        { throw new TimeoutException("Trade response was not confirmed. Inspect the game before another run."); }
-    }
+    TimeSpan TradeResponseTimeout => TimeSpan.FromSeconds(Math.Clamp(settings.TradeTimeoutSeconds, 1, 600));
 
-}
+    Task WaitTrade(ObservedTrade trade, Func<TradeView, bool> ready, CancellationToken cancellation,
+        Func<string>? context = null, Action? validate = null) =>
+        trade.WaitAsync(ready, TradeResponseTimeout, cancellation, context, validate);
 
-/// <summary>A disposable server-response listener scoped to one trade attempt.</summary>
-public sealed class ObservedTrade : IDisposable
-{
-    readonly CharacterConnection character;
-    public TradeMonitor Monitor { get; }
-    public string? Error { get; private set; }
-    public ObservedTrade(CharacterConnection character, string barName)
-    {
-        this.character = character;
-        Monitor = new(barName);
-        character.Connection.Tracker.Observed += Observe;
-    }
-    void Observe(byte opcode, byte[] payload)
-    {
-        if (opcode != 0x42) return;
-        try { Monitor.Observe(ExchangeReader.Read(payload)); }
-        catch (Exception error) { Error = "Exchange packet could not be decoded: " + error.Message; }
-    }
-    public void Dispose() => character.Connection.Tracker.Observed -= Observe;
 }

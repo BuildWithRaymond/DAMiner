@@ -355,6 +355,7 @@ public sealed partial class GameSession : IGameSession
                 PreserveTravelPopup();
         }
 
+        await ReconcileNpcTravel(ct);
         bool skipKeane = ReconcileKeaneTravel();
         if (GoalReached(stopWhen))
             return;
@@ -375,7 +376,11 @@ public sealed partial class GameSession : IGameSession
             if (world is not null)
             {
                 var observed = Snapshot;
-                var node = maps.WorldDestination(destination, world.Locations, observed.Map!.Value, worldEntrance ?? observed.Position!, target, ct);
+                // Tolerated targets can be props or occupied tiles. Reach their map
+                // first, then resolve the actual floor from the server's landing.
+                // Rejecting an exact prop here can select another world-map hub forever.
+                var worldTarget = tolerance > 0 ? null : target;
+                var node = maps.WorldDestination(destination, world.Locations, observed.Map!.Value, worldEntrance ?? observed.Position!, worldTarget, ct);
                 var old = Snapshot;
                 await Send(new ClientFieldMapMessage { MapId = node.MapId, X = node.MapX, Y = node.MapY, Checksum = node.Checksum }, ct);
                 await WaitAsync(x => x.Map == node.MapId && x.Position is not null && connection.Tracker.WorldMap is null, old.Revision, TimeSpan.FromSeconds(5), ct);
@@ -442,6 +447,11 @@ public sealed partial class GameSession : IGameSession
             }
 
             var step = plan.Steps.FirstOrDefault();
+            if (step?.NpcTransfer is not null)
+            {
+                await ExecuteNpcTravel(step, ct);
+                continue;
+            }
             if (step is null)
             {
                 bool ReplanFloor()
@@ -496,7 +506,9 @@ public sealed partial class GameSession : IGameSession
                 return;
             if (Snapshot.Map == from && connection.Tracker.WorldMap is null && Snapshot.Position != step.From)
                 continue;
-            await WaitAsync(x => connection.Tracker.WorldMap is not null || x.Map != from && x.Position is not null, Snapshot.Revision - 1, TimeSpan.FromSeconds(5), ct);
+            var arrival = await WaitAsync(x => connection.Tracker.WorldMap is not null || x.Map != from && x.Position is not null, Snapshot.Revision - 1, TimeSpan.FromSeconds(5), ct);
+            if (connection.Tracker.WorldMap is null && arrival.Map != step.Map)
+                throw new QuestBlockedException($"Exit from map {from} at {step.From.X},{step.From.Y} reached map {arrival.Map}, expected {step.Map}. Inspect the route before continuing.");
         }
     }
 

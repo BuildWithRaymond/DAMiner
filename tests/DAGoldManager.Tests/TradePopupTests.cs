@@ -13,6 +13,29 @@ public class TradePopupTests
 {
     static byte[] Text(string text) => Encoding.ASCII.GetBytes(text);
 
+    [Theory]
+    [InlineData("You have exchanged")]
+    [InlineData("You have exchanged.")]
+    [InlineData("YOU HAVE EXCHANGED!")]
+    [InlineData(" \r\n(You have exchanged.)\r\n ")]
+    public void ActualExchangeCompletionWordingCanBeDismissed(string text)
+    {
+        var popup = new ServerNotice(7, 11, 9, text, DateTimeOffset.UtcNow);
+        var state = new CharacterSnapshot { Generation = 7, Popup = popup };
+        Assert.True(TradePopupCleanup.IsCompletion(text));
+        Assert.Equal(popup, TradePopupCleanup.CompletionPopup(state, 7, 10));
+    }
+
+    [Theory]
+    [InlineData("You have exchanged?")]
+    [InlineData("You have exchanged nothing.")]
+    [InlineData("You have exchanged 3 Gold Bars.")]
+    [InlineData("Someone said You have exchanged.")]
+    public void OtherTextDoesNotBecomeAnExchangeCompletion(string text)
+    {
+        Assert.False(TradePopupCleanup.IsCompletion(text));
+    }
+
     [Fact]
     public void ExchangeCompletionPopupRemainsAvailableForSafeDismissal()
     {
@@ -25,12 +48,14 @@ public class TradePopupTests
         Assert.Null(tracker.Snapshot.Gold);
     }
 
-    [Fact]
-    public void CompletionMessageIsServerAcknowledgementEvenWithoutBothAcceptanceEchoes()
+    [Theory]
+    [InlineData("Exchange completed.")]
+    [InlineData("You have exchanged.")]
+    public void CompletionMessageIsServerAcknowledgementEvenWithoutBothAcceptanceEchoes(string text)
     {
         var monitor = new TradeMonitor("Gold Bar");
         monitor.Observe(new() { Event = ExchangeServerEventType.Started, TargetId = 42, TargetName = "Fictional" });
-        monitor.Observe(new() { Event = ExchangeServerEventType.Accepted, Party = ExchangeParty.Them, Message = "Exchange completed." });
+        monitor.Observe(new() { Event = ExchangeServerEventType.Accepted, Party = ExchangeParty.Them, Message = text });
         Assert.True(monitor.View.Completed);
         Assert.False(monitor.View.LocalAccepted);
     }

@@ -12,14 +12,14 @@ public sealed partial class GameGateway
     public Task CraftBarAsync(string name, CancellationToken cancellation)
     {
         var character = GetCharacter(name);
-        var learned = RequireRecipe();
+        var learned = CraftRecipeFor(character);
         return Control([character], async token =>
         {
             if (character.Snapshot.Registered == false)
                 throw new CraftRegistrationRequiredException("This account must be registered to make gold bars.");
             var wait = cooldowns.Remaining(name, DateTimeOffset.UtcNow, learned.CooldownSeconds);
             if (wait > TimeSpan.Zero) await Task.Delay(wait, token);
-            await character.Session.ExecuteAsync(BankNavigation.Arrival(learned), token);
+            character = await NavigateManagedAsync(name, BankNavigation.Arrival(learned), token);
             bool NpcVisible(CharacterSnapshot state) => state.Map == learned.Map && state.Entities.Values.Any(e =>
                 !e.IsPlayer && e.Name.Equals(learned.NpcName, StringComparison.OrdinalIgnoreCase));
             if (!NpcVisible(character.Snapshot))
@@ -86,7 +86,7 @@ public sealed partial class GameGateway
                     // Some NPCs leave the purchase menu open. Dismiss it; never repeat its choice.
                 }
             }
-            await CraftDialogCleanup.FinishAsync(RequireRecipe(), () => character.Snapshot,
+            await CraftDialogCleanup.FinishAsync(CraftRecipeFor(character), () => character.Snapshot,
                 (command, ct) => character.Session.ExecuteAsync(command, ct), token);
             lastCraftRequest.TryRemove(name, out _);
         }, cancellation);

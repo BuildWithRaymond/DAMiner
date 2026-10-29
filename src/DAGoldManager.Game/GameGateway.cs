@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
+using Arbiter.Net.Server;
+using Arbiter.Net.Server.Messages;
 using DAGoldManager.Core;
 using DAQuester.Core;
 using DAQuester.DarkAges;
@@ -17,9 +19,14 @@ public sealed partial class GameGateway : IGameGateway
     readonly ProxyHost host = new();
     readonly ConcurrentDictionary<string, CharacterConnection> characters = new(StringComparer.OrdinalIgnoreCase);
     readonly ConcurrentDictionary<string, Process> clients = new(StringComparer.OrdinalIgnoreCase);
+    readonly ConcurrentDictionary<string, bool> fastModes = new(StringComparer.OrdinalIgnoreCase);
+    readonly ConcurrentDictionary<string, int> craftBanks = new(StringComparer.OrdinalIgnoreCase);
+    readonly object craftBankSelection = new();
+    readonly object fastModeLock = new();
     readonly CharacterCommandLocks commandLocks = new();
     readonly SemaphoreSlim loginInput = new(1, 1);
     readonly Func<string, string> readPassword;
+    readonly IOperationLedger? travelLedger;
     readonly string contentDirectory;
     readonly CraftCooldowns cooldowns = new();
     GameSettings settings;
@@ -50,16 +57,19 @@ public sealed partial class GameGateway : IGameGateway
             int spareWeight = Math.Max(0, state.MaxWeight.Value - state.Weight.Value);
             int capacity = settings.BarWeight <= 0 ? freeSlots : Math.Min(freeSlots, spareWeight / settings.BarWeight);
             result.Add(new(state.Name!, state.Gold.Value, state.Count(recipe?.BarName ?? "Gold Bar"), capacity,
-                state.Map.Value, state.Position.X, state.Position.Y, state.Registered));
+                state.Map.Value, state.Position.X, state.Position.Y, state.Registered)
+                { CraftBankMap = CraftBankFor(character) });
         }
         return result;
     }
 
-    public GameGateway(GameSettings settings, CraftRecipe? recipe, Func<string, string> readPassword, string contentDirectory)
+    public GameGateway(GameSettings settings, CraftRecipe? recipe, Func<string, string> readPassword, string contentDirectory,
+        IOperationLedger? travelLedger = null)
     {
         this.settings = settings;
         this.recipe = recipe;
         this.readPassword = readPassword;
+        this.travelLedger = travelLedger;
         this.contentDirectory = contentDirectory;
         host.Diagnostic += message => Diagnostic?.Invoke(message);
     }
@@ -73,16 +83,33 @@ public sealed partial class GameGateway : IGameGateway
         externalRecipient = recipient;
     }
 
+    public void SetFastMode(string name, bool enabled)
+    {
+        lock (fastModeLock)
+        {
+            fastModes[name] = enabled;
+            if (characters.TryGetValue(name, out var character)) character.Session.FastMode = enabled;
+        }
+    }
+
+    public string FastModeDescription(string name) => characters.TryGetValue(name, out var character) && character.Snapshot.Connected
+        ? character.Session.FastModeDescription : "ready when connected";
+
+    bool IsConnectedOwnedCharacter(string name) => characters.TryGetValue(name, out var character) && character.Snapshot.Connected;
+
     public async Task LaunchAsync(SavedCharacter character, CancellationToken cancellation)
     {
+        fastModes.TryAdd(character.Name, character.FastMode);
         if (character.Name.Equals(externalRecipient, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("The external banker is already logged in and cannot be launched locally.");
         if (!OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("Live characters require Windows.");
+        if (await ResumePendingTravelAsync(character.Name, cancellation)) return;
         if (characters.TryGetValue(character.Name, out var current) && current.Snapshot.Connected) return;
         if (clients.TryGetValue(character.Name, out var existing) && !existing.HasExited)
             throw new InvalidOperationException($"{character.Name}'s client is already open but not ready. Check its login before proceeding.");
 
         ClientLauncher.Validate(settings.ClientPath);
+        craftBanks.TryRemove(character.Name, out _);
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
         using var ticket = new LoginTicketLifetime(new SavedLoginTicket(character.Name, () => readPassword(character.Name)));
         var connected = new TaskCompletionSource<CharacterConnection>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -101,8 +128,16 @@ public sealed partial class GameGateway : IGameGateway
                         return;
                     }
                     var maps = new MapRepository(Path.GetDirectoryName(settings.ClientPath)!, Path.Combine(contentDirectory, "routes.json"), settings.ServerProfile);
-                    var managed = new CharacterConnection(authenticated, maps, settings.MovementMilliseconds);
-                    characters[character.Name] = managed;
+                    var managed = new CharacterConnection(authenticated, maps, settings.MovementMilliseconds,
+                        fastModes[character.Name], IsConnectedOwnedCharacter);
+                    lock (fastModeLock)
+                    {
+                        characters[character.Name] = managed;
+                        // A checkbox can change while authentication constructs
+                        // the session. Apply the latest preference under the same lock.
+                        managed.Session.FastMode = fastModes[character.Name];
+                    }
+                    ObserveTravelConnection(managed);
                     managed.Session.Changed += _ => CharacterChanged?.Invoke(character.Name);
                     connected.TrySetResult(managed);
                 }, timeout.Token);
@@ -135,7 +170,8 @@ public sealed partial class GameGateway : IGameGateway
         int spareWeight = Math.Max(0, state.MaxWeight!.Value - state.Weight!.Value);
         int capacity = settings.BarWeight <= 0 ? freeSlots : Math.Min(freeSlots, spareWeight / settings.BarWeight);
         return new(name, state.Gold!.Value, state.Count(recipe?.BarName ?? "Gold Bar"), capacity,
-            state.Map!.Value, state.Position!.X, state.Position.Y, state.Registered);
+            state.Map!.Value, state.Position!.X, state.Position.Y, state.Registered)
+            { CraftBankMap = CraftBankFor(character) };
     }
 
     static async Task WaitForReady(CharacterConnection character, CancellationToken cancellation)
@@ -150,10 +186,11 @@ public sealed partial class GameGateway : IGameGateway
 
     public Task WalkToBankAsync(string name, CancellationToken cancellation)
     {
-        var learned = RequireRecipe();
-        return Control([GetCharacter(name)], async token =>
+        var character = GetCharacter(name);
+        var learned = CraftRecipeFor(character);
+        return Control([character], async token =>
         {
-            await GetCharacter(name).Session.ExecuteAsync(BankNavigation.Arrival(learned), token);
+            await NavigateManagedAsync(name, BankNavigation.Arrival(learned), token);
         }, cancellation);
     }
 
@@ -162,8 +199,8 @@ public sealed partial class GameGateway : IGameGateway
         var target = GetCharacter(receiver);
         return Control([GetCharacter(sender), target], async token =>
         {
-            var state = target.Snapshot;
-            await GetCharacter(sender).Session.ExecuteAsync(new("navigate", state.Map, state.Position, EntityId: state.Id, Tolerance: 2)
+            var state = GetCharacter(receiver).Snapshot;
+            await NavigateManagedAsync(sender, new("navigate", state.Map, state.Position, EntityId: state.Id, Tolerance: 2)
                 { StopWithinTolerance = true }, token);
             RequirePlayer(GetCharacter(sender), receiver);
         }, cancellation);
@@ -179,13 +216,13 @@ public sealed partial class GameGateway : IGameGateway
             bool Visible(CharacterSnapshot state) => state.Map == run.RecipientMap &&
                 state.Entities.Values.Any(e => e.IsPlayer && e.Name.Equals(run.Recipient, StringComparison.OrdinalIgnoreCase));
             if (!Visible(character.Snapshot))
-                await character.Session.ExecuteAsync(new("navigate", run.RecipientMap, new(run.RecipientX, run.RecipientY), Tolerance: 3)
+                character = await NavigateManagedAsync(courier, new("navigate", run.RecipientMap, new(run.RecipientX, run.RecipientY), Tolerance: 3)
                     { StopWithinTolerance = true }, token);
             if (!Visible(character.Snapshot))
                 await character.Session.WaitAsync(s => s.Entities.Values.Any(e => e.IsPlayer && e.Name.Equals(run.Recipient, StringComparison.OrdinalIgnoreCase)),
                     character.Snapshot.Revision, TimeSpan.FromSeconds(30), token);
             var target = RequirePlayer(character, run.Recipient, checkRange: false);
-            await character.Session.ExecuteAsync(new("navigate", run.RecipientMap, target.Position, EntityId: target.Id, Tolerance: 2)
+            character = await NavigateManagedAsync(courier, new("navigate", run.RecipientMap, target.Position, EntityId: target.Id, Tolerance: 2)
                 { StopWithinTolerance = true }, token);
             RequirePlayer(character, run.Recipient);
         }, cancellation);
@@ -219,6 +256,19 @@ public sealed partial class GameGateway : IGameGateway
 
     CraftRecipe RequireRecipe() => recipe ?? throw new InvalidOperationException("Record and save bank setup first.");
 
+    int CraftBankFor(CharacterConnection character)
+    {
+        var state = character.Snapshot;
+        // UI snapshots and the run can inspect the first login together. Loading
+        // route hints during that classification must happen once before navigation.
+        lock (craftBankSelection)
+            return craftBanks.GetOrAdd(state.Name ?? throw new InvalidOperationException("Character identity missing."), _ =>
+                character.Maps.IsMedenia(state.Map ?? throw new InvalidOperationException("Waiting for login map."))
+                    ? RegionalCrafting.NoamMap : AbelBank.Map);
+    }
+
+    CraftRecipe CraftRecipeFor(CharacterConnection character) => RegionalCrafting.ForBank(RequireRecipe(), CraftBankFor(character));
+
     static Entity RequirePlayer(CharacterConnection character, string name, bool checkRange = true)
     {
         var candidates = character.Snapshot.Entities.Values.Where(e => e.IsPlayer && e.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).ToArray();
@@ -237,13 +287,24 @@ public sealed partial class GameGateway : IGameGateway
             using var interrupted = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
             string? reason = null;
             void Stop(string message) { reason = message; interrupted.Cancel(); }
-            foreach (var character in participants) character.Connection.Interrupted += Stop;
+            var participantNames = participants.Select(character => character.Snapshot.Name!)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            void OnManagedInterruption(CharacterConnection character, string message)
+            {
+                if (character.Snapshot.Name is { } name && participantNames.Contains(name) &&
+                    !TryAcceptTravelInterruption(character, message)) Stop(message);
+            }
+            foreach (var character in participants) ObserveTravelConnection(character);
+            ManagedCharacterInterrupted += OnManagedInterruption;
             try { await action(interrupted.Token); }
-            catch (OperationCanceledException) when (!cancellation.IsCancellationRequested && reason is not null)
-            { throw new InvalidOperationException(reason); }
+            catch (OperationCanceledException error) when (!cancellation.IsCancellationRequested && reason is not null)
+            {
+                string detail = error is TradeCancellationException ? $"{error.Message} Interruption: {reason}" : reason;
+                throw new InvalidOperationException(detail, error);
+            }
             finally
             {
-                foreach (var character in participants) character.Connection.Interrupted -= Stop;
+                ManagedCharacterInterrupted -= OnManagedInterruption;
             }
         }, cancellation);
     }
@@ -256,9 +317,37 @@ public sealed partial class GameGateway : IGameGateway
 }
 
 /// <summary>Binds one authenticated connection, map repository, and acknowledged command session.</summary>
-public sealed class CharacterConnection(ProxyConnection connection, MapRepository maps, int cadence)
+public sealed class CharacterConnection
 {
-    public ProxyConnection Connection { get; } = connection;
-    public GameSession Session { get; } = new(connection, maps, cadence);
+    public ProxyConnection Connection { get; }
+    public GameSession Session { get; }
+    public MapRepository Maps { get; }
+    public TradeWindowState TradeWindow { get; } = new();
     public CharacterSnapshot Snapshot => Session.Snapshot;
+
+    public CharacterConnection(ProxyConnection connection, MapRepository maps, int cadence,
+        bool fastMode = false, Func<string, bool>? isOwnCharacter = null)
+    {
+        Connection = connection;
+        Maps = maps;
+        Session = new(connection, maps, cadence) { FastMode = fastMode, IsOwnCharacter = isOwnCharacter };
+        connection.Tracker.Observed += (opcode, payload) =>
+        {
+            if (opcode is not (0x42 or 0x0A)) return;
+            try
+            {
+                if (opcode == 0x42) TradeWindow.Observe(ExchangeReader.Read(payload));
+                else if (TradeWindow.IsOpen &&
+                    ServerMessageFactory.Default.Create(new ServerPacket(opcode, payload)) is ServerSystemMessage message &&
+                    TradePopupCleanup.IsServerCompletion((byte)message.MessageType, message.Message))
+                    TradeWindow.ObserveCompletion(message.Message);
+            }
+            catch (Exception)
+            {
+                // Keep the attempt's own listener alive so it can report the
+                // decoding failure. An unknown window cannot permit a new trade.
+                TradeWindow.MarkUncertain();
+            }
+        };
+    }
 }

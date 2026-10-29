@@ -1,11 +1,15 @@
 namespace DAGoldManager.Core;
 
 /// <summary>A saved roster entry. Passwords deliberately live in a separate Windows vault.</summary>
-public sealed record SavedCharacter(string Name, bool Enabled = true, bool CanCraftBars = true);
+public sealed record SavedCharacter(string Name, bool Enabled = true, bool CanCraftBars = true, bool FastMode = true);
 
 /// <summary>A scanned character balance; BarCapacity is additional carrying room, not total slots.</summary>
 /// <remarks>Registered is null when the server has not established registration status.</remarks>
-public sealed record CharacterState(string Name, long Gold, int Bars, int BarCapacity, int Map, int X, int Y, bool? Registered = null);
+public sealed record CharacterState(string Name, long Gold, int Bars, int BarCapacity, int Map, int X, int Y, bool? Registered = null)
+{
+    /// <summary>The bank selected from login location; navigation does not change this assignment.</summary>
+    public int CraftBankMap { get; init; } = AbelBank.Map;
+}
 
 /// <summary>External bankers are controlled elsewhere; local bankers are managed by this run.</summary>
 public enum BankerMode { External, Local }
@@ -50,7 +54,10 @@ public enum OperationOutcome
 }
 
 public sealed record RunProgress(RunPhase Phase, string Character, string Message, int Created = 0, int Delivered = 0);
-public sealed record RunResult(long StartingGold, long EndingGold, int StartingBars, int CreatedBars, int DeliveredBars);
+public sealed record RunResult(long StartingGold, long EndingGold, int StartingBars, int CreatedBars, int DeliveredBars)
+{
+    public long TravelGoldSpent { get; init; }
+}
 /// <summary>One immutable ledger entry. Repeated OperationId values describe the same operation.</summary>
 public sealed record OperationRecord(Guid RunId, Guid OperationId, string Kind, string Sender, string Receiver,
     long Amount, OperationOutcome Outcome, DateTimeOffset Time, string Detail = "");
@@ -61,6 +68,8 @@ public interface IGameGateway
     Task LaunchAsync(SavedCharacter character, CancellationToken cancellation);
     /// <summary>Read confirmed game state, not an optimistic prediction of sent commands.</summary>
     Task<CharacterState> ReadAsync(string name, CancellationToken cancellation);
+    /// <summary>Cumulative gold spent on travel fares established by fresh server evidence.</summary>
+    long TravelGoldSpent(string name) => 0;
     Task WalkToBankAsync(string name, CancellationToken cancellation);
     Task ApproachCharacterAsync(string sender, string receiver, CancellationToken cancellation);
     Task WalkToRecipientAsync(string courier, RunSettings settings, CancellationToken cancellation);

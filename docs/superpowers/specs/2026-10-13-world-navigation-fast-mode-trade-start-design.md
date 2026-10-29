@@ -1,6 +1,6 @@
 # World navigation, DAQuester fast mode, and trade startup
 
-Status: approved by the user on 2026-10-13; implementation in progress.
+Status: approved and implemented on 2026-10-13.
 
 ## Requested behavior
 
@@ -162,3 +162,32 @@ Run the full simulated suite and build the Windows host in an isolated output
 folder, because the existing DAMiner session may be running live characters.
 Report the build location and that opening the new build is required to use the
 changes. Do not stop a running application or launch any live automation.
+
+## Implementation results
+
+DAMiner 0.2.2 accounts for 1,531 referenced map IDs, including 1,434 dimensioned
+records and 1,417 packaged collision grids. The import accepts 196 legacy exit
+hints and excludes conflicting/shared unidentified triggers, missing endpoints,
+and invalid coordinates. The shipped graph connects 731 records to Abel bank,
+up from 608 in the refreshed modern catalog. Earlier candidate reachability
+figures above predate those conflict and landing validations; they are not
+claims about the shipped graph or live server walkability.
+
+Per-character fast mode is saved and enabled by default. Its cadence and owned
+character rules match current DAQuester. The fast movement pipeline and its
+server-corrected staircase recovery files match the current local upstream
+exactly. Several moves in flight retain the refresh barrier.
+
+Trade response stages use the configured bounded timeout, await mutual player
+visibility before one request, preserve relevant fresh server refusals, and
+check existing/unconfirmed windows. Acceptance failure remains ambiguous as soon
+as its write starts. Exact fresh balances and one-way offer verification remain
+required; old review records are neither acknowledged nor replayed automatically.
+
+Verification passed: 179 simulated C# tests, nine metadata import tests, the full
+browser simulation checks (including fast-mode toggling and both banker modes),
+and the isolated Windows publish/release-content check. Browser captures remain
+in ignored artifacts. The final package is
+`artifacts/desktop-world-navigation-0.2.2/DAMiner.exe`; the desktop shortcut points
+to it. Existing live applications were not operated. The precise historical
+trade-start cause remains unconfirmed because no live recording or run was made.

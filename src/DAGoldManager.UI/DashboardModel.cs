@@ -184,12 +184,36 @@ public sealed class DashboardModel
         SaveSettings();
     }
 
+    public void SetFastMode(string name, bool enabled)
+    {
+        lock (recordingLock)
+        {
+            if (!configuration.Characters.Any(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                throw new InvalidOperationException("Choose a saved character before changing fast mode.");
+            var next = configuration with { Characters = configuration.Characters.Select(c =>
+                c.Name.Equals(name, StringComparison.OrdinalIgnoreCase) ? c with { FastMode = enabled } : c).ToArray() };
+            // Persist first, using the draft lock so packet-driven recording saves
+            // cannot overwrite a preference changed while recording is active.
+            if (!Demo) store.Save(next);
+            configuration = next;
+        }
+        liveGame?.SetFastMode(name, enabled);
+        Notify();
+    }
+
+    public string FastModeDescription(string name)
+    {
+        var character = configuration.Characters.First(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        return !character.FastMode ? "normal walking" : Demo ? "simulated pace" :
+            liveGame?.FastModeDescription(name) ?? "ready when connected";
+    }
+
     GameGateway GetLiveGame()
     {
         if (Demo) throw new InvalidOperationException("Live game connections are disabled in preview.");
         if (liveGame is null)
         {
-            liveGame = new(configuration.Game, configuration.Recipe, passwords.Read, contentDirectory);
+            liveGame = new(configuration.Game, configuration.Recipe, passwords.Read, contentDirectory, store);
             liveGame.SeedCooldowns(store.RecentOperations());
             liveGame.CharacterChanged += _ =>
             {
@@ -199,6 +223,7 @@ public sealed class DashboardModel
         }
         liveGame.Configure(configuration.Game, configuration.Recipe,
             configuration.Run.BankerMode == BankerMode.External ? configuration.Run.Recipient : "");
+        foreach (var character in configuration.Characters) liveGame.SetFastMode(character.Name, character.FastMode);
         return liveGame;
     }
 
@@ -279,6 +304,7 @@ public sealed class DashboardModel
         SaveSettings();
         if (Recipe is null) throw new InvalidOperationException("Record bank setup first.");
         if (!BankerConfigured) throw new InvalidOperationException("Complete banker setup in Settings: choose a separate enabled local banker and deposit NPC, or an external banker and destination map.");
+        if (liveGame is not null) await liveGame.FlushVerifiedTravelAsync(CancellationToken.None);
         if (NeedsReview) throw new InvalidOperationException("Inspect interrupted operations in History and acknowledge them before a fresh run.");
         if (Producers.Any(c => c.Enabled && !PasswordSaved(c.Name))) throw new InvalidOperationException("Save passwords for every enabled producer and courier.");
         if (BankerMode == BankerMode.Local && !PasswordSaved(Recipient)) throw new InvalidOperationException("Save the local banker's password in Characters before starting.");

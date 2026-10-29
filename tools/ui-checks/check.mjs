@@ -44,12 +44,21 @@ try {
   assert.equal(await page.getByRole('navigation').getByRole('button', { name: 'Record setup', exact: true }).count(), 0,
     'A saved recipe must keep recording out of daily navigation');
   assert.equal(await page.getByRole('row').count(), 5);
+  const fastMode = page.getByRole('checkbox', { name: 'Fast mode: Rowan', exact: true });
+  assert.equal(await fastMode.isChecked(), true, 'Fast mode defaults on like DAQuester');
+  await fastMode.uncheck();
+  await page.getByRole('row').filter({ has: page.getByText('Rowan', { exact: true }) })
+    .getByText('normal walking', { exact: true }).waitFor();
   const homeEnable = page.getByRole('checkbox', { name: 'Enable Rowan', exact: true });
   assert.equal(await homeEnable.count(), 1, 'Operations must expose character enable controls');
   await homeEnable.uncheck();
   await page.getByRole('row').filter({ has: page.getByText('Rowan', { exact: true }) }).getByText('Disabled', { exact: true }).waitFor();
   await page.getByRole('button', { name: 'Characters', exact: true }).click();
   await page.getByRole('heading', { name: 'Your saved roster', exact: true }).waitFor();
+  assert.equal(await fastMode.isChecked(), false, 'Fast-mode preference follows the character between views');
+  await fastMode.check();
+  await page.getByRole('row').filter({ has: page.getByText('Rowan', { exact: true }) })
+    .getByText('simulated pace', { exact: true }).waitFor();
   assert.equal(await page.getByRole('checkbox', { name: 'Enable Rowan', exact: true }).isChecked(), false);
   await page.getByRole('checkbox', { name: 'Enable Rowan', exact: true }).check();
   await page.getByRole('row').filter({ has: page.getByText('Rowan', { exact: true }) }).getByText('Connected', { exact: true }).waitFor();

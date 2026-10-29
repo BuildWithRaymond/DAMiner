@@ -98,6 +98,13 @@ public sealed class ManualRecording : IDisposable
             if (opcode == 0x0A && ServerMessageFactory.Default.Create(new ServerPacket(opcode, payload)) is ServerSystemMessage notice)
             {
                 recorder.RecordCooldownNotice(notice.Message);
+                if (tradeStart is not null && character.Snapshot.Generation == tradeStart.Generation &&
+                    character.Snapshot.Revision > tradeStart.Revision &&
+                    TradePopupCleanup.IsServerCompletion((byte)notice.MessageType, notice.Message))
+                {
+                    sampleTrade?.ObserveCompletion(notice.Message);
+                    VerifySample();
+                }
                 changed();
             }
             if (opcode != 0x42) return;

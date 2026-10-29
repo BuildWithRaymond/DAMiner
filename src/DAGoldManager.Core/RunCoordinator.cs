@@ -12,6 +12,9 @@ public sealed class RunCoordinator(IGameGateway game, IOperationLedger ledger, I
     Guid runId;
     int created, delivered;
     readonly ConcurrentDictionary<string, byte> unregistered = new(StringComparer.OrdinalIgnoreCase);
+    readonly ConcurrentDictionary<string, long> startingTravelGold = new(StringComparer.OrdinalIgnoreCase);
+    IReadOnlyDictionary<string, int> craftBankMaps = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+    long courierTravelReserve;
 
     public void Pause()
     {
@@ -35,12 +38,15 @@ public sealed class RunCoordinator(IGameGateway game, IOperationLedger ledger, I
         runId = Guid.NewGuid();
         created = delivered = 0;
         unregistered.Clear();
+        startingTravelGold.Clear();
+        courierTravelReserve = 0;
         // Banker inventory is separate from production in both local and external modes.
         var producers = characters.Where(c => c.Enabled &&
             !c.Name.Equals(settings.Recipient, StringComparison.OrdinalIgnoreCase)).ToArray();
         bool localBanker = settings.BankerMode == BankerMode.Local;
         var launchRoster = localBanker ? producers.Append(characters.Single(c => c.Name.Equals(settings.Recipient, StringComparison.OrdinalIgnoreCase))).ToArray() : producers;
-        // Keep each pre-craft scan for final reconciliation even though producers work concurrently.
+        // Know every login region before spending. Otherwise an early craft could consume
+        // the only gold available for the courier's later continent crossing.
         var scanned = await RunTogether(launchRoster, async (character, token) =>
         {
             await Checkpoint(token);
@@ -48,6 +54,7 @@ public sealed class RunCoordinator(IGameGateway game, IOperationLedger ledger, I
             await game.LaunchAsync(character, token);
             Report(RunPhase.Scanning, character.Name, "Reading gold and inventory");
             var before = await game.ReadAsync(character.Name, token);
+            startingTravelGold[character.Name] = ReadTravelGold(character.Name);
             if (localBanker && character.Name.Equals(settings.Recipient, StringComparison.OrdinalIgnoreCase))
             {
                 Report(RunPhase.Scanning, character.Name, "Walking to Abel bank for deposits");
@@ -56,20 +63,22 @@ public sealed class RunCoordinator(IGameGateway game, IOperationLedger ledger, I
                 return before;
             }
             if (before.Registered == false) unregistered.TryAdd(character.Name, 0);
-            if (CanCraft(character)) await CraftFundedCharacter(character.Name, settings, token);
-            else Report(RunPhase.WaitingForCollection, character.Name, "Unregistered; waiting to fund a registered crafter");
             return before;
         }, cancellation);
         var starting = scanned.Where(c => !c.Name.Equals(settings.Recipient, StringComparison.OrdinalIgnoreCase)).ToArray();
+        craftBankMaps = starting.ToDictionary(c => c.Name, c => c.CraftBankMap, StringComparer.OrdinalIgnoreCase);
+        courierTravelReserve = RegionalBanks.RequiredTravelGold(starting, settings.Courier);
+        await SecureCourierTravelGold(producers, settings, cancellation);
         if (localBanker) await DepositBankerBars(settings, cancellation);
         await CraftAll(producers, settings, cancellation);
         await DeliverAll(producers, settings, cancellation);
         var ending = await Scan(producers, cancellation);
+        long travelGoldSpent = producers.Sum(c => TravelGoldUsedThisRun(c.Name));
         var result = new RunResult(starting.Sum(c => c.Gold), ending.Sum(c => c.Gold),
-            starting.Sum(c => c.Bars), created, delivered);
+            starting.Sum(c => c.Bars), created, delivered) { TravelGoldSpent = travelGoldSpent };
         // Gold purchases and bar delivery must reconcile across the whole production roster.
         // The banker is excluded because it may already carry unrelated bars before this run.
-        if (result.StartingGold - result.EndingGold != created * settings.BarCost ||
+        if (result.StartingGold - result.EndingGold != created * settings.BarCost + travelGoldSpent ||
             result.StartingBars + created != delivered + ending.Sum(c => c.Bars))
             throw new InvalidOperationException("Final totals do not reconcile. Inspect the ledger before starting another run.");
         Report(RunPhase.Completed, "", $"Delivered {delivered} bars; {result.EndingGold:N0} gold remains");
@@ -111,18 +120,25 @@ public sealed class RunCoordinator(IGameGateway game, IOperationLedger ledger, I
             while (true)
             {
                 await Checkpoint(cancellation);
-                var balances = states.Select(state => new GoldBalance(state.Name, state.Gold,
-                    CanCraft(roster.Single(c => c.Name.Equals(state.Name, StringComparison.OrdinalIgnoreCase)))))
-                    .Where(c => !c.CanCraftBars || c.Gold < settings.BarCost).ToArray();
-                var transfer = GoldPlanner.NextTransfer(balances, settings.BarCost, settings.PoolLeftoverGold);
+                // Pool within each login bank. The courier visits both regions; producers
+                // do not cross continents merely to combine their remaining gold.
+                var transfer = NextFundingTransfer(states, roster, settings);
                 if (transfer is null) break;
                 Report(RunPhase.PoolingGold, transfer.Sender, $"Funding {transfer.Receiver} with {transfer.Amount:N0} gold");
                 await game.ApproachCharacterAsync(transfer.Sender, transfer.Receiver, cancellation);
-                await VerifyGoldTransfer(transfer, cancellation);
+                // A local caravan can spend part of the donor's planned offer.
+                // Replan before recording a trade intent or sending any money.
+                states = await Scan(roster, cancellation);
+                var freshTransfer = NextFundingTransfer(states, roster, settings);
+                if (freshTransfer is null) break;
+                if (!freshTransfer.Sender.Equals(transfer.Sender, StringComparison.OrdinalIgnoreCase) ||
+                    !freshTransfer.Receiver.Equals(transfer.Receiver, StringComparison.OrdinalIgnoreCase)) continue;
+                await VerifyGoldTransfer(freshTransfer, cancellation);
                 states = await Scan(roster, cancellation);
             }
-            var fundedNames = states.Where(c => c.Gold >= settings.BarCost).Select(c => c.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var fundedCrafters = roster.Where(c => CanCraft(c) && fundedNames.Contains(c.Name)).ToArray();
+            var fundedNames = states.Where(c => SpendableGold(c, settings) >= settings.BarCost)
+                .Select(c => c.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var fundedCrafters = roster.Where(c => CanReceiveCraftFunding(c, settings) && fundedNames.Contains(c.Name)).ToArray();
             if (fundedCrafters.Length == 0) break;
             await RunTogether(fundedCrafters, async (character, token) =>
             {
@@ -130,6 +146,19 @@ public sealed class RunCoordinator(IGameGateway game, IOperationLedger ledger, I
                 return true;
             }, cancellation);
         }
+    }
+
+    GoldTransfer? NextFundingTransfer(IReadOnlyList<CharacterState> states, SavedCharacter[] roster, RunSettings settings)
+    {
+        foreach (var group in states.GroupBy(state => craftBankMaps[state.Name]))
+        {
+            var balances = group.Select(state => new GoldBalance(state.Name, SpendableGold(state, settings),
+                CanReceiveCraftFunding(roster.Single(c => c.Name.Equals(state.Name, StringComparison.OrdinalIgnoreCase)), settings)))
+                .Where(c => !c.CanCraftBars || c.Gold < settings.BarCost).ToArray();
+            if (GoldPlanner.NextTransfer(balances, settings.BarCost, settings.PoolLeftoverGold) is { } transfer)
+                return transfer;
+        }
+        return null;
     }
 
     async Task CraftFundedCharacter(string name, RunSettings settings, CancellationToken cancellation)
@@ -144,7 +173,7 @@ public sealed class RunCoordinator(IGameGateway game, IOperationLedger ledger, I
                 Report(RunPhase.WaitingForCollection, name, "Unregistered; waiting to fund a registered crafter");
                 return;
             }
-            if (state.Gold < settings.BarCost)
+            if (SpendableGold(state, settings) < settings.BarCost)
             {
                 Report(RunPhase.WaitingForCollection, name, "Funded crafting complete; waiting for courier");
                 return;
@@ -153,6 +182,14 @@ public sealed class RunCoordinator(IGameGateway game, IOperationLedger ledger, I
                 throw new InvalidOperationException($"{name} needs inventory room before all crafting can finish.");
             Report(RunPhase.Crafting, name, "Walking to bank and making a bar");
             await game.WalkToBankAsync(name, cancellation);
+            // Local caravans can charge on the way to the bank. Preserve the
+            // courier's onward fare using the fresh arrival balance before spending.
+            state = await game.ReadAsync(name, cancellation);
+            if (SpendableGold(state, settings) < settings.BarCost)
+            {
+                Report(RunPhase.WaitingForCollection, name, "Bank arrival complete; remaining gold is reserved or below bar cost");
+                return;
+            }
             try
             {
                 await VerifyOperation("craft", name, "", 1, async () =>
@@ -185,6 +222,58 @@ public sealed class RunCoordinator(IGameGateway game, IOperationLedger ledger, I
     }
 
     bool CanCraft(SavedCharacter character) => character.CanCraftBars && !unregistered.ContainsKey(character.Name);
+    bool CanReceiveCraftFunding(SavedCharacter character, RunSettings settings) => CanCraft(character) &&
+        (!character.Name.Equals(settings.Courier, StringComparison.OrdinalIgnoreCase) ||
+            settings.BarCost <= GoldPlanner.CarryingLimit - courierTravelReserve);
+
+    long SpendableGold(CharacterState state, RunSettings settings)
+    {
+        if (state.Gold is < 0 or > GoldPlanner.CarryingLimit)
+            throw new InvalidOperationException("A character's gold is outside the supported carrying range.");
+        long reserve = state.Name.Equals(settings.Courier, StringComparison.OrdinalIgnoreCase) ? courierTravelReserve : 0;
+        return Math.Max(0, state.Gold - reserve);
+    }
+
+    async Task SecureCourierTravelGold(SavedCharacter[] roster, RunSettings settings, CancellationToken cancellation)
+    {
+        if (courierTravelReserve == 0) return;
+        int courierBank = craftBankMaps[settings.Courier];
+        var peers = roster.Where(c => craftBankMaps[c.Name] == courierBank).ToArray();
+        while (true)
+        {
+            await Checkpoint(cancellation);
+            var states = await Scan(peers, cancellation);
+            var courier = states.Single(c => c.Name.Equals(settings.Courier, StringComparison.OrdinalIgnoreCase));
+            if (courier.Gold >= courierTravelReserve) return;
+            if (states.Sum(c => c.Gold) < courierTravelReserve)
+                throw new InvalidOperationException($"The courier needs {courierTravelReserve:N0} gold for travel. Fund it or a character using the same bank before crafting.");
+            var donor = states.Where(c => !c.Name.Equals(settings.Courier, StringComparison.OrdinalIgnoreCase) && c.Gold > 0)
+                .OrderByDescending(c => c.Gold).First();
+            Report(RunPhase.PoolingGold, donor.Name, $"Reserving travel gold for {settings.Courier}");
+            await game.ApproachCharacterAsync(donor.Name, settings.Courier, cancellation);
+            // Navigation can itself spend a verified fare. Choose the handoff only
+            // after arrival so no amount is based on the donor's old balance.
+            var donorAfterTravel = await game.ReadAsync(donor.Name, cancellation);
+            var courierAfterTravel = await game.ReadAsync(settings.Courier, cancellation);
+            long amount = Math.Min(donorAfterTravel.Gold, courierTravelReserve - courierAfterTravel.Gold);
+            if (amount > 0) await VerifyGoldTransfer(new(donor.Name, settings.Courier, amount), cancellation);
+        }
+    }
+
+    long ReadTravelGold(string name)
+    {
+        long spent = game.TravelGoldSpent(name);
+        if (spent < 0) throw new InvalidOperationException("Verified travel spending cannot be negative.");
+        return spent;
+    }
+
+    long TravelGoldUsedThisRun(string name)
+    {
+        long spent = ReadTravelGold(name) - startingTravelGold[name];
+        if (spent < 0) throw new InvalidOperationException("Verified travel spending moved backwards during this run.");
+        return spent;
+    }
+
     sealed class VerifiedCraftRejection(string message) : InvalidOperationException(message);
 
     static async Task<T[]> RunTogether<T>(IEnumerable<SavedCharacter> roster,
@@ -222,7 +311,6 @@ public sealed class RunCoordinator(IGameGateway game, IOperationLedger ledger, I
         while ((await Scan(roster, cancellation)).Sum(c => c.Bars) > 0)
         {
             await Checkpoint(cancellation);
-            await game.WalkToBankAsync(settings.Courier, cancellation);
             await CollectBars(roster, settings, cancellation);
             var courier = await game.ReadAsync(settings.Courier, cancellation);
             if (courier.Bars == 0)
@@ -303,7 +391,7 @@ public sealed class RunCoordinator(IGameGateway game, IOperationLedger ledger, I
                 int batch = Math.Min(settings.BarsPerTrade, Math.Min(donor.Bars, courier.BarCapacity));
                 if (batch == 0) break;
                 Report(RunPhase.Collecting, producer.Name, $"Giving {batch} bars to {settings.Courier}");
-                await game.ApproachCharacterAsync(producer.Name, settings.Courier, cancellation);
+                await game.ApproachCharacterAsync(settings.Courier, producer.Name, cancellation);
                 await VerifyBarCollection(producer.Name, settings.Courier, batch, cancellation);
             }
         }

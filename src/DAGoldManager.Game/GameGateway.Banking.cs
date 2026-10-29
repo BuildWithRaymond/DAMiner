@@ -18,7 +18,7 @@ public sealed partial class GameGateway
         return Control([banker], async token =>
         {
             await BankerPreparation.PrepareAsync(() => banker.Snapshot,
-                (command, ct) => banker.Session.ExecuteAsync(command, ct), async ct =>
+                async (command, ct) => { banker = await NavigateManagedAsync(name, command, ct); }, async ct =>
             {
                 try
                 {

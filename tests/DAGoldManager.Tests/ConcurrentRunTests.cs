@@ -30,18 +30,25 @@ public class ConcurrentRunTests
     }
 
     [Fact]
-    public async Task ReadyCharacterCraftsWhileAnotherIsStillLoggingIn()
+    public async Task CraftingWaitsUntilEveryLoginLocationIsKnown()
     {
         var game = new HookedGame(2);
-        var firstCrafted = Signal();
+        var slowLoginStarted = Signal();
+        var finishLogin = Signal();
         game.Launch = async (name, token) =>
         {
-            if (name == "Character2") await firstCrafted.Task.WaitAsync(token);
+            if (name != "Character2") return;
+            slowLoginStarted.SetResult();
+            await finishLogin.Task.WaitAsync(token);
         };
-        game.Craft = (name, _) => { if (name == "Character1") firstCrafted.SetResult(); return Task.CompletedTask; };
         using var limit = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-        var result = await new RunCoordinator(game, new TestLedger(), new TestClock())
+        var run = new RunCoordinator(game, new TestLedger(), new TestClock())
             .RunAsync(game.Inner.Roster, TestGame.DeliverySettings, limit.Token);
+        await slowLoginStarted.Task.WaitAsync(limit.Token);
+        bool craftedBeforeScanFinished = game.Inner.Actions.Contains("craft");
+        finishLogin.SetResult();
+        var result = await run;
+        Assert.False(craftedBeforeScanFinished);
         Assert.Equal(2, result.CreatedBars);
     }
 

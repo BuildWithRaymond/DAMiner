@@ -16,6 +16,15 @@ public sealed class TradeMonitor(string barName)
     TradeView view = new(false, 0, "", 0, 0, 0, 0, false, false, false, false, false, 0);
     public TradeView View { get { lock (gate) return view; } }
 
+    public void ObserveCompletion(string text)
+    {
+        lock (gate)
+        {
+            if (view.Started && !view.Cancelled && TradePopupCleanup.IsCompletion(text))
+                view = view with { Completed = true };
+        }
+    }
+
     public void Observe(ServerExchangeMessage message)
     {
         lock (gate)

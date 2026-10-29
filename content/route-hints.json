@@ -1,0 +1,2136 @@
+[
+  {
+    "sourceMap": 137,
+    "destinationMap": 7050,
+    "from": {
+      "X": 3,
+      "Y": 4
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 162,
+    "destinationMap": 501,
+    "from": {
+      "X": 9,
+      "Y": 14
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 165,
+    "destinationMap": 163,
+    "from": {
+      "X": 13,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 217,
+    "destinationMap": 198,
+    "from": {
+      "X": 19,
+      "Y": 7
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 217,
+    "destinationMap": 220,
+    "from": {
+      "X": 14,
+      "Y": 4
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 251,
+    "destinationMap": 247,
+    "from": {
+      "X": 15,
+      "Y": 6
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 283,
+    "destinationMap": 3084,
+    "from": {
+      "X": 6,
+      "Y": 1
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 326,
+    "destinationMap": 3018,
+    "from": {
+      "X": 3,
+      "Y": 12
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 410,
+    "destinationMap": 503,
+    "from": {
+      "X": 7,
+      "Y": 14
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 413,
+    "destinationMap": 503,
+    "from": {
+      "X": 14,
+      "Y": 4
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 431,
+    "destinationMap": 504,
+    "from": {
+      "X": 11,
+      "Y": 8
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 486,
+    "destinationMap": 7050,
+    "from": {
+      "X": 3,
+      "Y": 4
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 501,
+    "destinationMap": 162,
+    "from": {
+      "X": 11,
+      "Y": 46
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 502,
+    "destinationMap": 3079,
+    "from": {
+      "X": 15,
+      "Y": 67
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 503,
+    "destinationMap": 413,
+    "from": {
+      "X": 81,
+      "Y": 15
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 544,
+    "destinationMap": 543,
+    "from": {
+      "X": 87,
+      "Y": 99
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 545,
+    "destinationMap": 544,
+    "from": {
+      "X": 0,
+      "Y": 35
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 546,
+    "destinationMap": 545,
+    "from": {
+      "X": 0,
+      "Y": 9
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 547,
+    "destinationMap": 546,
+    "from": {
+      "X": 29,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 548,
+    "destinationMap": 553,
+    "from": {
+      "X": 19,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 548,
+    "destinationMap": 554,
+    "from": {
+      "X": 25,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 550,
+    "destinationMap": 551,
+    "from": {
+      "X": 30,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 550,
+    "destinationMap": 554,
+    "from": {
+      "X": 19,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 551,
+    "destinationMap": 547,
+    "from": {
+      "X": 49,
+      "Y": 25
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 552,
+    "destinationMap": 553,
+    "from": {
+      "X": 49,
+      "Y": 28
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 552,
+    "destinationMap": 558,
+    "from": {
+      "X": 31,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 553,
+    "destinationMap": 548,
+    "from": {
+      "X": 21,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 554,
+    "destinationMap": 550,
+    "from": {
+      "X": 28,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 555,
+    "destinationMap": 557,
+    "from": {
+      "X": 13,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 555,
+    "destinationMap": 993,
+    "from": {
+      "X": 29,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 558,
+    "destinationMap": 559,
+    "from": {
+      "X": 34,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 559,
+    "destinationMap": 998,
+    "from": {
+      "X": 41,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 562,
+    "destinationMap": 559,
+    "from": {
+      "X": 0,
+      "Y": 10
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 562,
+    "destinationMap": 563,
+    "from": {
+      "X": 27,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 563,
+    "destinationMap": 562,
+    "from": {
+      "X": 33,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 617,
+    "destinationMap": 3068,
+    "from": {
+      "X": 18,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 662,
+    "destinationMap": 1247,
+    "from": {
+      "X": 73,
+      "Y": 10
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 662,
+    "destinationMap": 5255,
+    "from": {
+      "X": 77,
+      "Y": 69
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 662,
+    "destinationMap": 5256,
+    "from": {
+      "X": 83,
+      "Y": 65
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 701,
+    "destinationMap": 6928,
+    "from": {
+      "X": 19,
+      "Y": 4
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 950,
+    "destinationMap": 503,
+    "from": {
+      "X": 5,
+      "Y": 11
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 993,
+    "destinationMap": 555,
+    "from": {
+      "X": 43,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 999,
+    "destinationMap": 557,
+    "from": {
+      "X": 49,
+      "Y": 26
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 1247,
+    "destinationMap": 662,
+    "from": {
+      "X": 16,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 1963,
+    "destinationMap": 1965,
+    "from": {
+      "X": 12,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 1965,
+    "destinationMap": 662,
+    "from": {
+      "X": 14,
+      "Y": 4
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2086,
+    "destinationMap": 2087,
+    "from": {
+      "X": 8,
+      "Y": 19
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2088,
+    "destinationMap": 2089,
+    "from": {
+      "X": 7,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2088,
+    "destinationMap": 2120,
+    "from": {
+      "X": 14,
+      "Y": 34
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2089,
+    "destinationMap": 2088,
+    "from": {
+      "X": 12,
+      "Y": 19
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2090,
+    "destinationMap": 2089,
+    "from": {
+      "X": 0,
+      "Y": 15
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2090,
+    "destinationMap": 2091,
+    "from": {
+      "X": 99,
+      "Y": 82
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2091,
+    "destinationMap": 2090,
+    "from": {
+      "X": 0,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2092,
+    "destinationMap": 2111,
+    "from": {
+      "X": 60,
+      "Y": 99
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2093,
+    "destinationMap": 2092,
+    "from": {
+      "X": 0,
+      "Y": 77
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2094,
+    "destinationMap": 2093,
+    "from": {
+      "X": 0,
+      "Y": 43
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2094,
+    "destinationMap": 2095,
+    "from": {
+      "X": 99,
+      "Y": 45
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2095,
+    "destinationMap": 2094,
+    "from": {
+      "X": 0,
+      "Y": 41
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2095,
+    "destinationMap": 2096,
+    "from": {
+      "X": 49,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2095,
+    "destinationMap": 2099,
+    "from": {
+      "X": 55,
+      "Y": 99
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2096,
+    "destinationMap": 2095,
+    "from": {
+      "X": 7,
+      "Y": 39
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2096,
+    "destinationMap": 2097,
+    "from": {
+      "X": 5,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2097,
+    "destinationMap": 2096,
+    "from": {
+      "X": 77,
+      "Y": 99
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2097,
+    "destinationMap": 2098,
+    "from": {
+      "X": 35,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2098,
+    "destinationMap": 2097,
+    "from": {
+      "X": 77,
+      "Y": 99
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 2111,
+    "destinationMap": 2112,
+    "from": {
+      "X": 11,
+      "Y": 19
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3006,
+    "destinationMap": 3043,
+    "from": {
+      "X": 15,
+      "Y": 14
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3010,
+    "destinationMap": 340,
+    "from": {
+      "X": 15,
+      "Y": 0
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3015,
+    "destinationMap": 3014,
+    "from": {
+      "X": 23,
+      "Y": 6
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3043,
+    "destinationMap": 3042,
+    "from": {
+      "X": 9,
+      "Y": 8
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3043,
+    "destinationMap": 3044,
+    "from": {
+      "X": 4,
+      "Y": 22
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3043,
+    "destinationMap": 3045,
+    "from": {
+      "X": 9,
+      "Y": 17
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3043,
+    "destinationMap": 3046,
+    "from": {
+      "X": 21,
+      "Y": 6
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3043,
+    "destinationMap": 3047,
+    "from": {
+      "X": 16,
+      "Y": 11
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3044,
+    "destinationMap": 3043,
+    "from": {
+      "X": 3,
+      "Y": 13
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3046,
+    "destinationMap": 3043,
+    "from": {
+      "X": 13,
+      "Y": 3
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3071,
+    "destinationMap": 542,
+    "from": {
+      "X": 0,
+      "Y": 8
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3071,
+    "destinationMap": 2052,
+    "from": {
+      "X": 0,
+      "Y": 8
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3071,
+    "destinationMap": 6628,
+    "from": {
+      "X": 0,
+      "Y": 8
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3075,
+    "destinationMap": 3076,
+    "from": {
+      "X": 28,
+      "Y": 31
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3076,
+    "destinationMap": 3075,
+    "from": {
+      "X": 5,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3076,
+    "destinationMap": 4000,
+    "from": {
+      "X": 11,
+      "Y": 31
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3271,
+    "destinationMap": 542,
+    "from": {
+      "X": 64,
+      "Y": 60
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3271,
+    "destinationMap": 2052,
+    "from": {
+      "X": 64,
+      "Y": 60
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3271,
+    "destinationMap": 6628,
+    "from": {
+      "X": 64,
+      "Y": 60
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 3634,
+    "destinationMap": 8420,
+    "from": {
+      "X": 18,
+      "Y": 8
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 4000,
+    "destinationMap": 4002,
+    "from": {
+      "X": 31,
+      "Y": 13
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 4720,
+    "destinationMap": 3079,
+    "from": {
+      "X": 40,
+      "Y": 43
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5010,
+    "destinationMap": 5011,
+    "from": {
+      "X": 56,
+      "Y": 47
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5011,
+    "destinationMap": 5010,
+    "from": {
+      "X": 56,
+      "Y": 47
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5016,
+    "destinationMap": 5015,
+    "from": {
+      "X": 36,
+      "Y": 14
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5016,
+    "destinationMap": 5017,
+    "from": {
+      "X": 9,
+      "Y": 85
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5017,
+    "destinationMap": 5016,
+    "from": {
+      "X": 20,
+      "Y": 81
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5017,
+    "destinationMap": 5018,
+    "from": {
+      "X": 6,
+      "Y": 47
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5018,
+    "destinationMap": 5017,
+    "from": {
+      "X": 6,
+      "Y": 21
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5020,
+    "destinationMap": 5021,
+    "from": {
+      "X": 12,
+      "Y": 24
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5021,
+    "destinationMap": 5020,
+    "from": {
+      "X": 12,
+      "Y": 28
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5026,
+    "destinationMap": 5025,
+    "from": {
+      "X": 79,
+      "Y": 28
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5028,
+    "destinationMap": 5029,
+    "from": {
+      "X": 50,
+      "Y": 13
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5029,
+    "destinationMap": 5028,
+    "from": {
+      "X": 49,
+      "Y": 13
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5029,
+    "destinationMap": 5030,
+    "from": {
+      "X": 28,
+      "Y": 7
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5030,
+    "destinationMap": 5029,
+    "from": {
+      "X": 12,
+      "Y": 2
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5210,
+    "destinationMap": 5220,
+    "from": {
+      "X": 15,
+      "Y": 10
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 5220,
+    "destinationMap": 5210,
+    "from": {
+      "X": 0,
+      "Y": 5
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6000,
+    "destinationMap": 6002,
+    "from": {
+      "X": 12,
+      "Y": 12
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6525,
+    "destinationMap": 6924,
+    "from": {
+      "X": 28,
+      "Y": 18
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6530,
+    "destinationMap": 6532,
+    "from": {
+      "X": 74,
+      "Y": 50
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6531,
+    "destinationMap": 6530,
+    "from": {
+      "X": 19,
+      "Y": 74
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6532,
+    "destinationMap": 6530,
+    "from": {
+      "X": 0,
+      "Y": 57
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6532,
+    "destinationMap": 6533,
+    "from": {
+      "X": 12,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6533,
+    "destinationMap": 6532,
+    "from": {
+      "X": 70,
+      "Y": 74
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6534,
+    "destinationMap": 6536,
+    "from": {
+      "X": 74,
+      "Y": 18
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6535,
+    "destinationMap": 6537,
+    "from": {
+      "X": 74,
+      "Y": 9
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6536,
+    "destinationMap": 6537,
+    "from": {
+      "X": 16,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6537,
+    "destinationMap": 6536,
+    "from": {
+      "X": 15,
+      "Y": 74
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6538,
+    "destinationMap": 6539,
+    "from": {
+      "X": 54,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6538,
+    "destinationMap": 6540,
+    "from": {
+      "X": 74,
+      "Y": 17
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6540,
+    "destinationMap": 6538,
+    "from": {
+      "X": 0,
+      "Y": 17
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6540,
+    "destinationMap": 6541,
+    "from": {
+      "X": 3,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6541,
+    "destinationMap": 6540,
+    "from": {
+      "X": 2,
+      "Y": 74
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6544,
+    "destinationMap": 6545,
+    "from": {
+      "X": 69,
+      "Y": 51
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6545,
+    "destinationMap": 6544,
+    "from": {
+      "X": 0,
+      "Y": 51
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6545,
+    "destinationMap": 6546,
+    "from": {
+      "X": 36,
+      "Y": 89
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6546,
+    "destinationMap": 6545,
+    "from": {
+      "X": 33,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6550,
+    "destinationMap": 6551,
+    "from": {
+      "X": 36,
+      "Y": 89
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6551,
+    "destinationMap": 6550,
+    "from": {
+      "X": 33,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6553,
+    "destinationMap": 6554,
+    "from": {
+      "X": 35,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6555,
+    "destinationMap": 6556,
+    "from": {
+      "X": 32,
+      "Y": 89
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6557,
+    "destinationMap": 6534,
+    "from": {
+      "X": 49,
+      "Y": 31
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6558,
+    "destinationMap": 6557,
+    "from": {
+      "X": 12,
+      "Y": 44
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6559,
+    "destinationMap": 6558,
+    "from": {
+      "X": 12,
+      "Y": 44
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6561,
+    "destinationMap": 6560,
+    "from": {
+      "X": 21,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6561,
+    "destinationMap": 6562,
+    "from": {
+      "X": 0,
+      "Y": 14
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6562,
+    "destinationMap": 6561,
+    "from": {
+      "X": 48,
+      "Y": 16
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6575,
+    "destinationMap": 6541,
+    "from": {
+      "X": 0,
+      "Y": 15
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6577,
+    "destinationMap": 6576,
+    "from": {
+      "X": 48,
+      "Y": 16
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6578,
+    "destinationMap": 6577,
+    "from": {
+      "X": 49,
+      "Y": 31
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6579,
+    "destinationMap": 6578,
+    "from": {
+      "X": 12,
+      "Y": 44
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6579,
+    "destinationMap": 6580,
+    "from": {
+      "X": 21,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6580,
+    "destinationMap": 6579,
+    "from": {
+      "X": 12,
+      "Y": 44
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6585,
+    "destinationMap": 6581,
+    "from": {
+      "X": 12,
+      "Y": 37
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6586,
+    "destinationMap": 6583,
+    "from": {
+      "X": 12,
+      "Y": 1
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6587,
+    "destinationMap": 6592,
+    "from": {
+      "X": 1,
+      "Y": 13
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6589,
+    "destinationMap": 6593,
+    "from": {
+      "X": 38,
+      "Y": 12
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6591,
+    "destinationMap": 706,
+    "from": {
+      "X": 9,
+      "Y": 19
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6596,
+    "destinationMap": 6580,
+    "from": {
+      "X": 0,
+      "Y": 15
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6597,
+    "destinationMap": 6568,
+    "from": {
+      "X": 12,
+      "Y": 39
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6598,
+    "destinationMap": 6562,
+    "from": {
+      "X": 19,
+      "Y": 33
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6928,
+    "destinationMap": 701,
+    "from": {
+      "X": 0,
+      "Y": 79
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6932,
+    "destinationMap": 701,
+    "from": {
+      "X": 19,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 6997,
+    "destinationMap": 10000,
+    "from": {
+      "X": 17,
+      "Y": 34
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 7050,
+    "destinationMap": 7071,
+    "from": {
+      "X": 19,
+      "Y": 1
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8101,
+    "destinationMap": 8105,
+    "from": {
+      "X": 16,
+      "Y": 19
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8111,
+    "destinationMap": 8112,
+    "from": {
+      "X": 1,
+      "Y": 30
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8119,
+    "destinationMap": 8120,
+    "from": {
+      "X": 59,
+      "Y": 3
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8299,
+    "destinationMap": 8300,
+    "from": {
+      "X": 16,
+      "Y": 8
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8300,
+    "destinationMap": 10000,
+    "from": {
+      "X": 59,
+      "Y": 48
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8306,
+    "destinationMap": 8319,
+    "from": {
+      "X": 95,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8307,
+    "destinationMap": 8308,
+    "from": {
+      "X": 0,
+      "Y": 30
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8308,
+    "destinationMap": 8307,
+    "from": {
+      "X": 99,
+      "Y": 30
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8308,
+    "destinationMap": 8309,
+    "from": {
+      "X": 14,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8309,
+    "destinationMap": 8308,
+    "from": {
+      "X": 14,
+      "Y": 99
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8310,
+    "destinationMap": 8321,
+    "from": {
+      "X": 54,
+      "Y": 6
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8318,
+    "destinationMap": 8345,
+    "from": {
+      "X": 50,
+      "Y": 94
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8321,
+    "destinationMap": 8310,
+    "from": {
+      "X": 15,
+      "Y": 59
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8353,
+    "destinationMap": 8354,
+    "from": {
+      "X": 39,
+      "Y": 15
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8354,
+    "destinationMap": 8353,
+    "from": {
+      "X": 0,
+      "Y": 6
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8355,
+    "destinationMap": 8356,
+    "from": {
+      "X": 32,
+      "Y": 5
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8361,
+    "destinationMap": 8362,
+    "from": {
+      "X": 29,
+      "Y": 9
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8420,
+    "destinationMap": 3634,
+    "from": {
+      "X": 27,
+      "Y": 2
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8431,
+    "destinationMap": 8432,
+    "from": {
+      "X": 26,
+      "Y": 2
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8436,
+    "destinationMap": 8435,
+    "from": {
+      "X": 30,
+      "Y": 1
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8437,
+    "destinationMap": 8438,
+    "from": {
+      "X": 34,
+      "Y": 23
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8445,
+    "destinationMap": 8444,
+    "from": {
+      "X": 5,
+      "Y": 14
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8992,
+    "destinationMap": 8993,
+    "from": {
+      "X": 15,
+      "Y": 5
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8993,
+    "destinationMap": 8992,
+    "from": {
+      "X": 48,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 8995,
+    "destinationMap": 10000,
+    "from": {
+      "X": 45,
+      "Y": 28
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 9356,
+    "destinationMap": 9355,
+    "from": {
+      "X": 29,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 9357,
+    "destinationMap": 9355,
+    "from": {
+      "X": 0,
+      "Y": 26
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 9378,
+    "destinationMap": 10000,
+    "from": {
+      "X": 0,
+      "Y": 24
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 9378,
+    "destinationMap": 10998,
+    "from": {
+      "X": 0,
+      "Y": 24
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 9378,
+    "destinationMap": 10999,
+    "from": {
+      "X": 0,
+      "Y": 24
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 10039,
+    "destinationMap": 10038,
+    "from": {
+      "X": 0,
+      "Y": 40
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 10039,
+    "destinationMap": 10042,
+    "from": {
+      "X": 20,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 10042,
+    "destinationMap": 10039,
+    "from": {
+      "X": 11,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 10042,
+    "destinationMap": 10046,
+    "from": {
+      "X": 11,
+      "Y": 0
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 10046,
+    "destinationMap": 10042,
+    "from": {
+      "X": 20,
+      "Y": 49
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 10056,
+    "destinationMap": 10057,
+    "from": {
+      "X": 11,
+      "Y": 4
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 10265,
+    "destinationMap": 10998,
+    "from": {
+      "X": 87,
+      "Y": 46
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 11500,
+    "destinationMap": 10000,
+    "from": {
+      "X": 56,
+      "Y": 60
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 11500,
+    "destinationMap": 10998,
+    "from": {
+      "X": 56,
+      "Y": 60
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 11500,
+    "destinationMap": 10999,
+    "from": {
+      "X": 56,
+      "Y": 60
+    },
+    "worldMap": true,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 11500,
+    "destinationMap": 11546,
+    "from": {
+      "X": 57,
+      "Y": 66
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  },
+  {
+    "sourceMap": 11519,
+    "destinationMap": 11500,
+    "from": {
+      "X": 5,
+      "Y": 20
+    },
+    "worldMap": false,
+    "source": "Excalibur legacy walker",
+    "sourceSha256": "eafb5b945aab5f2e5266194efdc518ee67805292d0de8193241c55ea1d473f30"
+  }
+]

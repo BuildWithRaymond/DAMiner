@@ -5,10 +5,21 @@ using System.Buffers.Binary;
 
 namespace DAQuester.DarkAges.Navigation;
 
-public record Portal(Tile From, int Map, Tile To, bool WorldMap = false);
+// Null is an explicitly unknown landing, never an optimistic (0,0) position.
+public record Portal(Tile From, int Map, Tile? To, bool WorldMap = false, NpcTransfer? NpcTransfer = null);
 public record MapTransfer(Tile From, Tile To);
+// An estimated arrival ranks routes only. Actual server position always establishes arrival.
+public record NpcTransfer(Tile Anchor, int Map, Tile PlanningArrival, string Npc, string Service, string[] Destinations, uint MinimumGold = 0)
+{
+    public bool FareBeforeDestination { get; init; }
+}
 public record MapRecord(int Id, string Name, int Width, int Height, Portal[] Portals)
 {
+    public NpcTransfer[] NpcTransfers { get; init; } = [];
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public IEnumerable<Portal> Connections => Portals.Concat(NpcTransfers.Select(t => new Portal(t.Anchor, t.Map, t.PlanningArrival, NpcTransfer: t)));
+
     public MapTransfer[] InternalTransfers { get;
         init; } = [];
 
@@ -19,7 +30,7 @@ public record MapRecord(int Id, string Name, int Width, int Height, Portal[] Por
 public partial class MapRepository(string clientDirectory, string routesPath, string serverProfile = "datester-7.41")
 {
     readonly string collisionProfile = serverProfile, routeFile = routesPath;
-    readonly Dictionary<int, MapRecord> records = (JsonSerializer.Deserialize<MapRecord[]>(File.ReadAllText(routesPath), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? []).ToDictionary(x => x.Id);
+    readonly Dictionary<int, MapRecord> records = ReadRecords(routesPath);
     readonly Dictionary<int, Grid> grids = [];
     public Grid Load(int id)
     {
@@ -82,10 +93,13 @@ public partial class MapRepository(string clientDirectory, string routesPath, st
         throw new InvalidDataException("sotp.dat not found in client ia.dat.");
     }
 
-    public IReadOnlyList<Portal> Route(int from, int destination)
+    public IReadOnlyList<Portal> Route(int from, int destination, bool includeNpcTransfers = true)
     {
+        EnsureExitHints();
         if (from == destination)
             return [];
+        // A recorded walking route retains priority over a paid service.
+        includeNpcTransfers &= !MapsReaching(destination, false).Contains(from);
         var queue = new Queue<int>();
         queue.Enqueue(from);
         var parents = new Dictionary<int, (int Map, Portal Via)>();
@@ -97,7 +111,7 @@ public partial class MapRepository(string clientDirectory, string routesPath, st
         {
             if (!records.TryGetValue(map, out var r))
                 continue;
-            foreach (var p in r.Portals)
+            foreach (var p in includeNpcTransfers ? r.Connections : r.Portals)
             {
                 if (!visited.Add(p.Map))
                     continue;
@@ -124,14 +138,41 @@ public partial class MapRepository(string clientDirectory, string routesPath, st
         throw new InvalidOperationException("No recorded portal route from " + from + " to " + destination + ". Record a route.");
     }
 
-    public MapRecord Record(int id) => records.TryGetValue(id, out var r) ? r : throw new InvalidOperationException("Map " + id + " has no recorded dimensions or portals.");
+    public bool IsTravelNpc(string name) => records.Values.Any(r => r.NpcTransfers.Any(t =>
+        t.Npc.Equals(name, StringComparison.OrdinalIgnoreCase)));
+
+    public bool IsMedenia(int sourceMap)
+    {
+        EnsureExitHints();
+        // Local caravans join Medenia's towns. Continental ship/carpet edges
+        // must not make a Temuair character appear to belong to Medenia.
+        bool Local(MapRecord source, NpcTransfer transfer) =>
+            !(source.Id == 10055 && transfer.Map == 1960 && transfer.Service.Equals("Carpet Merchant", StringComparison.OrdinalIgnoreCase)) &&
+            !(source.Id == 6926 && transfer.Map == 10028 && transfer.Service.Equals("Express Ship", StringComparison.OrdinalIgnoreCase));
+        var reverse = records.Values.SelectMany(r => r.Portals.Select(p => (To: p.Map, From: r.Id))
+            .Concat(r.NpcTransfers.Where(t => Local(r, t)).Select(t => (To: t.Map, From: r.Id))))
+            .ToLookup(edge => edge.To, edge => edge.From);
+        HashSet<int> visited = [10061];
+        Queue<int> pending = new();
+        pending.Enqueue(10061);
+        while (pending.TryDequeue(out int map))
+            foreach (int parent in reverse[map])
+                if (visited.Add(parent)) pending.Enqueue(parent);
+        return records.ContainsKey(sourceMap) && visited.Contains(sourceMap);
+    }
+
+    public MapRecord Record(int id)
+    {
+        EnsureExitHints();
+        return records.TryGetValue(id, out var r) ? r : throw new InvalidOperationException("Map " + id + " has no recorded dimensions or portals.");
+    }
     string MapLabel(int id) => records.TryGetValue(id, out var r) && !string.IsNullOrWhiteSpace(r.Name) ? r.Name + " (" + id + ")" : "Map " + id;
     public MapTransfer? TransferTo(int map, Tile start, Tile target, ISet<Tile>? obstacles = null, CancellationToken ct = default)
     {
         if (Record(map).InternalTransfers.Length == 0)
             return null;
         var step = Plan(map, start, map, target, obstacles, ct).Steps.FirstOrDefault();
-        return step is null ? null : new(step.From, step.To);
+        return step?.To is { } landing ? new(step.From, landing) : null;
     }
 
     public Arbiter.Net.Server.Types.ServerWorldMapNode WorldDestination(int destination, IEnumerable<Arbiter.Net.Server.Types.ServerWorldMapNode> nodes)

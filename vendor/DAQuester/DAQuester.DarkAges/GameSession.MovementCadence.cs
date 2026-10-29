@@ -19,6 +19,8 @@ public sealed partial class GameSession
     }
 
     void PulseMovement() => Interlocked.Exchange(ref movementChanged, new(TaskCreationOptions.RunContinuationsAsynchronously)).TrySetResult();
+    // Set by the owner; a saved name alone is not evidence of a connected alt.
+    public Func<string, bool>? IsOwnCharacter { get; set; }
     public string FastModeDescription => !FastMode ? "slows near players" : !Snapshot.Connected ? "ready when connected" : Snapshot.Position is null || Snapshot.Id is null ? "waiting for location" : Snapshot.Map is 10056 or 10180 ? "normal pace in this area" : MovementCadence(Snapshot) == 160 ? "fast pace" : "normal pace near players";
 
     internal int MovementCadence(CharacterSnapshot state, Tile? projected = null)
@@ -26,10 +28,10 @@ public sealed partial class GameSession
         if (!FastMode)
             return cadence;
         // Excalibur Fast is 160ms; unsafe ordinary walking is 430ms. Every other
-        // observed player counts here, without friend or alt exemptions.
+        // observed player counts except the owner's currently connected characters.
         if (!state.Connected || state.Id is null || state.Position is not { } origin || state.Map is null or 10056 or 10180)
             return 430;
-        return state.Entities.Values.Any(e => e.IsPlayer && e.Id != state.Id && (Distance(origin, e.Position) <= 20 || projected is not null && Distance(projected, e.Position) <= 20)) ? 430 : 160;
+        return state.Entities.Values.Any(e => e.IsPlayer && e.Id != state.Id && IsOwnCharacter?.Invoke(e.Name) != true && (Distance(origin, e.Position) <= 20 || projected is not null && Distance(projected, e.Position) <= 20)) ? 430 : 160;
     }
 
     static int Distance(Tile a, Tile b) => Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);

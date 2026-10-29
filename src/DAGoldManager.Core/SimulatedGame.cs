@@ -18,8 +18,22 @@ public sealed class SimulatedGame : IGameGateway
         cancellation.ThrowIfCancellationRequested();
         lock (gate) return Task.FromResult(states[name]);
     }
-    public Task WalkToBankAsync(string name, CancellationToken cancellation) => Move(name, 167, 10, 10, cancellation);
-    public Task ApproachCharacterAsync(string sender, string receiver, CancellationToken cancellation) => Tick(cancellation);
+    public Task WalkToBankAsync(string name, CancellationToken cancellation)
+    {
+        lock (gate)
+        {
+            int map = states[name].CraftBankMap;
+            return Move(name, map, map == RegionalBanks.NoamMap ? 8 : AbelBank.FloorX, 8, cancellation);
+        }
+    }
+    public Task ApproachCharacterAsync(string sender, string receiver, CancellationToken cancellation)
+    {
+        lock (gate)
+        {
+            var target = states[receiver];
+            return Move(sender, target.Map, Math.Max(0, target.X - 1), target.Y, cancellation);
+        }
+    }
     public Task WalkToRecipientAsync(string courier, RunSettings settings, CancellationToken cancellation)
     {
         if (settings.BankerMode == BankerMode.Local)

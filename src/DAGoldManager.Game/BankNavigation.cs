@@ -11,6 +11,8 @@ public static class BankNavigation
         // Lamont stands behind a counter. Row 8 is the public floor, clear of the row-11 exits.
         if (recipe.Map == AbelBank.Map)
             return AbelArrival();
+        if (recipe.Map == RegionalCrafting.NoamMap)
+            return new("navigate", RegionalCrafting.NoamMap, new(8, 8), Tolerance: 3);
         return new("navigate", recipe.Map, new(recipe.X, recipe.Y), Tolerance: 3);
     }
 

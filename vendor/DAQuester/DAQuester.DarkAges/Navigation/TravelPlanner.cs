@@ -3,21 +3,26 @@ using Arbiter.Net.Server.Types;
 
 namespace DAQuester.DarkAges.Navigation;
 
-public record TravelStep(int SourceMap, Tile From, int Map, Tile To, bool WorldMap = false);
-public record TravelPlan(IReadOnlyList<TravelStep> Steps, int Cost);
+public record TravelStep(int SourceMap, Tile From, int Map, Tile? To, bool WorldMap = false, NpcTransfer? NpcTransfer = null);
+public record TravelPlan(IReadOnlyList<TravelStep> Steps, int Cost)
+{
+    public bool RequiresReplan { get; init; }
+}
 public partial class MapRepository
 {
     readonly Dictionary<(int Map, Tile Origin), int[]> distanceFields = [];
     readonly Queue<(int Map, Tile Origin)> fieldOrder = [];
     int cachedCells;
     const int MaxCachedCells = 4 * 1024 * 1024; // At most 16 MiB of distance arrays per character.
-    readonly Dictionary<int, HashSet<int>> destinationReachability = [];
+    readonly Dictionary<(int Destination, bool NpcTransfers), HashSet<int>> destinationReachability = [];
     readonly record struct RouteNode(int Map, Tile Position, bool Goal = false);
-    HashSet<int> MapsReaching(int destination)
+    HashSet<int> MapsReaching(int destination, bool includeNpcTransfers = true)
     {
-        if (destinationReachability.TryGetValue(destination, out var saved))
+        var key = (destination, includeNpcTransfers);
+        if (destinationReachability.TryGetValue(key, out var saved))
             return saved;
-        var reverse = records.Values.SelectMany(r => r.Portals.Select(p => (To: p.Map, From: r.Id))).ToLookup(p => p.To, p => p.From);
+        var reverse = records.Values.SelectMany(r => (includeNpcTransfers ? r.Connections : r.Portals)
+            .Select(p => (To: p.Map, From: r.Id))).ToLookup(p => p.To, p => p.From);
         var result = new HashSet<int>
         {
             destination
@@ -30,7 +35,7 @@ public partial class MapRepository
                     pending.Enqueue(parent);
         if (destinationReachability.Count >= 16)
             destinationReachability.Clear();
-        destinationReachability[destination] = result;
+        destinationReachability[key] = result;
         return result;
     }
 
@@ -41,7 +46,8 @@ public partial class MapRepository
         if (reusable && distanceFields.TryGetValue(key, out var saved))
             return saved;
         var r = Record(map);
-        var field = Load(map).Distances(origin, r.ExitTiles, r.InternalTransfers.Select(t => t.From), obstacles, ct);
+        var occupied = r.NpcTransfers.Select(t => t.Anchor).Concat(obstacles?.AsEnumerable() ?? []).ToHashSet();
+        var field = Load(map).Distances(origin, r.ExitTiles, r.InternalTransfers.Select(t => t.From), occupied, ct);
         if (reusable)
         {
             while (distanceFields.Count > 0 && (distanceFields.Count >= 2048 || cachedCells + field.Length > MaxCachedCells))
@@ -75,7 +81,22 @@ public partial class MapRepository
 
     public TravelPlan Plan(int from, Tile origin, int destination, Tile? target = null, ISet<Tile>? obstacles = null, CancellationToken ct = default)
     {
-        var reachable = MapsReaching(destination);
+        EnsureExitHints();
+        if (MapsReaching(destination, false).Contains(from))
+            try
+            {
+                return PlanRecorded(from, origin, destination, target, obstacles, ct, false);
+            }
+            catch (InvalidOperationException) when (from != destination && records.Values.Any(r => r.NpcTransfers.Length > 0))
+            {
+                // Connectivity alone cannot prove that the walking route is clear.
+            }
+        return PlanRecorded(from, origin, destination, target, obstacles, ct, true);
+    }
+
+    TravelPlan PlanRecorded(int from, Tile origin, int destination, Tile? target, ISet<Tile>? obstacles, CancellationToken ct, bool includeNpcTransfers)
+    {
+        var reachable = MapsReaching(destination, includeNpcTransfers);
         var start = new RouteNode(from, origin);
         var costs = new Dictionary<RouteNode, (int Actions, int Changes)>
         {
@@ -134,12 +155,12 @@ public partial class MapRepository
 
             if (node.Map == destination && target is not null && Distance(r, field, target) is >= 0 and var tail)
                 Offer(new(destination, target, true), node, null, (cost.Actions + tail, cost.Changes));
-            foreach (var p in r.Portals.Where(p => reachable.Contains(p.Map) && (node.Map != destination || p.Map == destination)))
+            foreach (var p in r.Portals.Where(p => p.To is not null && reachable.Contains(p.Map) && (node.Map != destination || p.Map == destination)))
             {
                 int walk = TriggerDistance(r, field, node.Position, p.From, blocks);
                 if (walk < 0)
                     continue;
-                Offer(new(p.Map, p.To), node, new(node.Map, p.From, p.Map, p.To, p.WorldMap), (cost.Actions + walk + (p.WorldMap ? 1 : 0), cost.Changes + 1));
+                Offer(new(p.Map, p.To!), node, new(node.Map, p.From, p.Map, p.To, p.WorldMap), (cost.Actions + walk + (p.WorldMap ? 1 : 0), cost.Changes + 1));
             }
 
             foreach (var t in r.InternalTransfers)
@@ -149,10 +170,33 @@ public partial class MapRepository
                     continue;
                 Offer(new(node.Map, t.To), node, new(node.Map, t.From, node.Map, t.To), (cost.Actions + walk, cost.Changes + 1));
             }
+
+            foreach (var transfer in r.NpcTransfers.Where(t => includeNpcTransfers && reachable.Contains(t.Map) && node.Map != destination))
+            {
+                var approach = TravelNpcApproach(r, node.Position, transfer, blocks, field);
+                if (approach is null) continue;
+                Offer(new(transfer.Map, transfer.PlanningArrival), node,
+                    new(node.Map, approach, transfer.Map, transfer.PlanningArrival, NpcTransfer: transfer),
+                    (cost.Actions + Distance(r, field, approach) + 5, cost.Changes + 1));
+            }
         }
 
+        // A fallback is deliberately one hop. The walker replans from the real
+        // server landing and cannot project a path through an unknown coordinate.
+        if (NextRecordedExit(from, origin, destination, obstacles, unavailableCollision, ct, includeNpcTransfers) is { } next)
+            return next;
         string unavailable = unavailableCollision.Count == 0 ? "" : " Collision data could not be loaded for: " + string.Join(", ", unavailableCollision.Order().Select(MapLabel)) + ".";
         throw new InvalidOperationException("No walkable recorded route from " + from + " to " + destination + ". Check map data or blocked exits." + unavailable);
+    }
+
+    Tile? TravelNpcApproach(MapRecord map, Tile origin, NpcTransfer transfer, ISet<Tile>? obstacles, int[] field)
+    {
+        var triggers = map.ExitTiles.Concat(map.InternalTransfers.Select(t => t.From)).ToHashSet();
+        return Enumerable.Range(transfer.Anchor.Y - 3, 7)
+            .SelectMany(y => Enumerable.Range(transfer.Anchor.X - 3, 7).Select(x => new Tile(x, y)))
+            .Where(tile => tile != transfer.Anchor && Math.Abs(tile.X - transfer.Anchor.X) + Math.Abs(tile.Y - transfer.Anchor.Y) <= 3 &&
+                !Load(map.Id).Blocked(tile) && !triggers.Contains(tile) && obstacles?.Contains(tile) != true && Distance(map, field, tile) >= 0)
+            .OrderBy(tile => Distance(map, field, tile)).FirstOrDefault();
     }
 
     public ServerWorldMapNode WorldDestination(int destination, IEnumerable<ServerWorldMapNode> available, int sourceMap, Tile entrance, Tile? target = null, CancellationToken ct = default)
@@ -161,22 +205,32 @@ public partial class MapRepository
         var exits = Record(sourceMap).Portals.Where(p => p.WorldMap && p.From == entrance).ToArray();
         if (exits.Length == 0)
             exits = Record(sourceMap).Portals.Where(p => p.WorldMap && Math.Abs(p.From.X - entrance.X) + Math.Abs(p.From.Y - entrance.Y) <= 1).ToArray();
-        var candidates = new List<(ServerWorldMapNode Node, int Cost, int Changes)>();
+        var candidates = new List<(ServerWorldMapNode Node, bool Partial, int Cost, int Changes)>();
         foreach (var node in nodes)
             foreach (var exit in exits.Where(p => p.Map == node.MapId))
             {
                 ct.ThrowIfCancellationRequested();
                 try
                 {
-                    var plan = Plan(exit.Map, exit.To, destination, target, ct: ct);
-                    candidates.Add((node, plan.Cost, plan.Steps.Count));
+                    if (exit.To is { } landing)
+                    {
+                        var plan = Plan(exit.Map, landing, destination, target, ct: ct);
+                        candidates.Add((node, plan.RequiresReplan, plan.Cost, plan.Steps.Count));
+                    }
+                    else
+                    {
+                        // Selection is limited to nodes actually supplied by the
+                        // server. The next iteration reads its real landing.
+                        var route = Route(node.MapId, destination);
+                        candidates.Add((node, true, route.Count, route.Count));
+                    }
                 }
                 catch (Exception e) when (e is FileNotFoundException or InvalidDataException or InvalidOperationException)
                 {
                 }
             }
 
-        var best = candidates.OrderBy(c => c.Cost).ThenBy(c => c.Changes).ThenBy(c => c.Node.MapId).Select(c => c.Node).FirstOrDefault();
+        var best = candidates.OrderBy(c => c.Partial).ThenBy(c => c.Cost).ThenBy(c => c.Changes).ThenBy(c => c.Node.MapId).Select(c => c.Node).FirstOrDefault();
         if (best is not null)
             return best;
         if (exits.Any(e => nodes.Any(n => n.MapId == e.Map)))

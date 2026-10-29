@@ -17,6 +17,7 @@ passwords/
 *.log
 .dotnet/
 **/node_modules/
+**/__pycache__/
 *.Backup.tmp
 
 # Local game artwork and generated public fallback icons never enter source history.
