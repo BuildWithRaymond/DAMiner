@@ -32,6 +32,8 @@ Verified craft progress saves automatically as a draft. **Stop recording** prese
 
 **Pause** finishes the current atomic operation before pausing. **Stop** cancels commands and waits, leaving game clients open. An uncertain operation is preserved in History; inspect affected characters before acknowledging it and requesting a fresh run. Existing clients from other apps cannot be attached.
 
+Manual movement, turning, clicks, dialog replies, and exchanges do not automatically pause the run. **Pause** and **Stop** remain available when you want to take over. Fresh server state still drives navigation and transaction checks; a changed trade offer, disconnect, or uncertain balance change can stop the affected operation and the run.
+
 Unregistered donors hand off enough gold to fund each purchase without exceeding the receiver's carrying cap. This handoff remains active when **Pool leftover gold** is off; that setting controls pooling between registered crafters. Insufficient gold remains carried. If no registered crafter is enabled and enough gold exists for a bar, the run stops before moving it.
 
 The server's explicit **Please register your character to use this feature** refusal switches that character to donor behavior. A refused craft is recorded as **Rejected** only when a fresh read confirms unchanged gold and bar counts. Timeouts and changed balances still require review. Missing login expiration text alone does not establish registration status; use the saved checkbox for known unregistered characters.

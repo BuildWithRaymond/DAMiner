@@ -148,7 +148,7 @@ public class GatewayTravelHandoffTests
     }
 
     [Fact]
-    public async Task ReplacementManualInputStillInterruptsPostNavigationControlledWork()
+    public async Task ReplacementDisconnectStillInterruptsPostNavigationControlledWork()
     {
         await using var world = new TravelWorld();
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
@@ -158,10 +158,10 @@ public class GatewayTravelHandoffTests
         world.Interrupt("Server redirect. Resume on replacement connection.");
         world.Replace();
         await navigated.Task.WaitAsync(timeout.Token);
-        world.InterruptReplacement("Manual movement paused automation.");
+        world.InterruptReplacement("Disconnected");
 
         var error = await Assert.ThrowsAsync<InvalidOperationException>(() => work);
-        Assert.Contains("Manual movement", error.Message);
+        Assert.Contains("Disconnected", error.Message);
         Assert.Equal(3, world.RequestCount);
     }
 

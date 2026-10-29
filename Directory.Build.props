@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <Deterministic>true</Deterministic>
-    <Version Condition="'$(Version)' == ''">0.2.2</Version>
+    <Version Condition="'$(Version)' == ''">0.2.3</Version>
     <!-- Forks can override this property with their own public release repository. -->
     <UpdateRepository Condition="'$(UpdateRepository)' == ''">BuildWithRaymond/DAMiner</UpdateRepository>
   </PropertyGroup>

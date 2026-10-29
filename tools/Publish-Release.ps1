@@ -1,5 +1,5 @@
 param(
-    [ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version = '0.2.2',
+    [ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version = '0.2.3',
     [ValidatePattern('^$|^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?/[A-Za-z0-9_.-]{1,100}$')][string]$Repository = 'BuildWithRaymond/DAMiner',
     [switch]$SkipTests
 )

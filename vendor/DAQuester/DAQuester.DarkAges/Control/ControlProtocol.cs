@@ -127,7 +127,7 @@ public class McpProtocol(Func<ControlRequest, Task<object?>> call)
     {
         "state" => "Read connected characters, observed snapshots, current dialogs, jobs, and calibration status.",
         "map" => "Read an actual client map, walkable tiles, portals, and image-derived candidate tree regions.",
-        "command" => "Perform an ordered game action with server-observed state: navigate, visit, step, open, choose, next, close, input, or say. Manual input and stop cancel it.",
+        "command" => "Perform an ordered game action with server-observed state: navigate, visit, step, open, choose, next, close, input, or say. Stop or a session interruption cancels it; manual input does not automatically pause automation.",
         "export" => "Export a sanitized packet replay; credentials and handshake secrets are omitted.",
         "analyze" => "Label dialog evidence and branch collection regions automatically from recorded state changes.",
         "calibrate" => "Start one monitored Spare a Stick calibration run. Only evidence-proven completion enables its recipe.",

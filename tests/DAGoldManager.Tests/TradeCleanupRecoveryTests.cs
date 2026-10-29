@@ -115,7 +115,7 @@ public class TradeCleanupRecoveryTests
         Task TradeAction(CancellationToken token)
         {
             typeof(ProxyConnection).GetMethod("Interrupt", BindingFlags.Instance | BindingFlags.NonPublic)!
-                .Invoke(world.Connection, ["Manual trade paused automation."]);
+                .Invoke(world.Connection, ["Disconnected"]);
             return Task.FromException(new TradeCancellationException("confirming the bar offer", false, false,
                 new OperationCanceledException(token)));
         }
@@ -123,7 +123,7 @@ public class TradeCleanupRecoveryTests
             .Invoke(world.Gateway, [new[] { world.Character }, (Func<CancellationToken, Task>)TradeAction, CancellationToken.None])!;
         var error = await Assert.ThrowsAsync<InvalidOperationException>(() => control);
         Assert.Contains("confirming the bar offer", error.Message);
-        Assert.Contains("Manual trade paused automation.", error.Message);
+        Assert.Contains("Disconnected", error.Message);
     }
 
     sealed class CleanupWorld : IDisposable

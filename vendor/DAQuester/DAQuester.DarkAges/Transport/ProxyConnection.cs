@@ -87,22 +87,6 @@ public sealed partial class ProxyConnection(TcpClient client, TcpClient remote, 
         }
     }
 
-    static string ClientOpcodeName(byte opcode) => opcode switch
-    {
-        0x06 => "walk",
-        0x11 => "turn",
-        0x39 => "merchant reply",
-        0x3A => "dialog reply",
-        0x43 => "click",
-        _ => "client packet"
-    };
-    void InterruptForClientPacket(byte opcode, string reason)
-    {
-        CancelMovement();
-        Diagnostic?.Invoke($"Client opcode 0x{opcode:X2} ({ClientOpcodeName(opcode)}) interrupted automation");
-        Interrupt(reason);
-    }
-
     async Task Pump(NetworkStream source, bool fromClient, CancellationToken token)
     {
         var frames = new FrameBuffer();
@@ -151,19 +135,17 @@ public sealed partial class ProxyConnection(TcpClient client, TcpClient remote, 
 
                         if ((byte)plain.Command == 0x06)
                         {
-                            InterruptForClientPacket(0x06, "Manual movement paused automation.");
+                            // Native walking can invalidate queued projections. Reconcile
+                            // from server receipts without cancelling the managed run.
+                            CancelMovement();
                             if (plain.Data.Length >= 2)
                                 plain.Data[1] = walkCounter++;
                         }
 
-                        if ((byte)plain.Command is 0x39 or 0x3A or 0x43 or 0x11)
-                            InterruptForClientPacket((byte)plain.Command, "Manual dialog or turn paused automation.");
                         if ((byte)plain.Command is 0x39 or 0x3A)
                             DialogAction?.Invoke(plain);
                         if ((byte)plain.Command is 0x39 or 0x3A or 0x43 or 0x4A)
                             NativeGameAction?.Invoke(plain);
-                        if ((byte)plain.Command == 0x4A)
-                            InterruptForClientPacket(0x4A, "Manual trade paused automation.");
                         var encrypted = clientCrypto.Encrypt(plain, sequence);
                         if (ClientPacketEncryptor.IsEncrypted((byte)plain.Command))
                             sequence++;

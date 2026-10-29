@@ -30,9 +30,10 @@ one hop and replan from the real landing.
 
 Travel submissions carry immutable character, generation, expected destination,
 quoted fare and inventory evidence. An expected redirect can resume only on a
-newer owned connection for the same authenticated character. Manual input and
-ordinary disconnects still interrupt. Exact fare debits plus unchanged inventory
-are counted once, separately from crafting costs. Submission is durable before
+newer owned connection for the same authenticated character. Ordinary disconnects
+still interrupt; native player actions do not automatically pause the run. Exact
+fare debits plus unchanged inventory are counted once, separately from crafting
+costs. Submission is durable before
 sending; only verified receipts resolve its ledger record. Ambiguous payments
 are never resent automatically.
 
